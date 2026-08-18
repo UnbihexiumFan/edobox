@@ -7,7 +7,6 @@ export class Preferences {
 	public autoFollow: boolean;
 	public enableNotePreview: boolean;
 	public showFifth: boolean;
-	public showThird: boolean;
 	public notesOutsideScale: boolean;
 	public showLetters: boolean;
 	public showChannels: boolean;
@@ -25,7 +24,6 @@ export class Preferences {
 	public keyboardLayout: string;
 	public bassOffset: number;
 	public enableMidi: boolean;
-	public recordingOffset: number;
 	public showRecordButton: boolean;
 	public snapRecordedNotesToRhythm: boolean;
 	public ignorePerformedNotesNotInScale: boolean;
@@ -41,7 +39,6 @@ export class Preferences {
 		this.autoFollow = window.localStorage.getItem("autoFollow") != "false";
 		this.enableNotePreview = window.localStorage.getItem("enableNotePreview") != "false";
 		this.showFifth = window.localStorage.getItem("showFifth") == "true";
-		this.showThird = window.localStorage.getItem("showThird") == "true";
 		this.notesOutsideScale = window.localStorage.getItem("notesOutsideScale") == "true";
 		this.showLetters = window.localStorage.getItem("showLetters") == "true";
 		this.showChannels = window.localStorage.getItem("showChannels") == "true";
@@ -60,7 +57,6 @@ export class Preferences {
 		this.metronomeWhileRecording = window.localStorage.getItem("metronomeWhileRecording") != "false";
 		this.keyboardLayout = window.localStorage.getItem("keyboardLayout") || "wickiHayden";
 		this.bassOffset = (+(<any>window.localStorage.getItem("bassOffset"))) || 0;
-		this.recordingOffset = (+(<any>window.localStorage.getItem("recordingOffset"))) || 0;
 		this.layout = window.localStorage.getItem("layout") || "small";
 		this.colorTheme = window.localStorage.getItem("colorTheme") || "edobox classic";
 		this.visibleOctaves = ((<any>window.localStorage.getItem("visibleOctaves")) >>> 0) || Preferences.defaultVisibleOctaves;
@@ -80,7 +76,6 @@ export class Preferences {
 		window.localStorage.setItem("autoFollow", this.autoFollow ? "true" : "false");
 		window.localStorage.setItem("enableNotePreview", this.enableNotePreview ? "true" : "false");
 		window.localStorage.setItem("showFifth", this.showFifth ? "true" : "false");
-		window.localStorage.setItem("showThird", this.showThird ? "true" : "false");
 		window.localStorage.setItem("notesOutsideScale", this.notesOutsideScale ? "true" : "false");
 		window.localStorage.setItem("showLetters", this.showLetters ? "true" : "false");
 		window.localStorage.setItem("showChannels", this.showChannels ? "true" : "false");
@@ -99,7 +94,6 @@ export class Preferences {
 		window.localStorage.setItem("metronomeWhileRecording", this.metronomeWhileRecording ? "true" : "false");
 		window.localStorage.setItem("keyboardLayout", this.keyboardLayout);
 		window.localStorage.setItem("bassOffset", String(this.bassOffset));
-		window.localStorage.setItem("recordingOffset", String(this.recordingOffset));
 		window.localStorage.setItem("layout", this.layout);
 		window.localStorage.setItem("colorTheme", this.colorTheme);
 		window.localStorage.setItem("volume", String(this.volume));

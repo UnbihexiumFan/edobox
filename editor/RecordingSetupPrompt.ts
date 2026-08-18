@@ -29,7 +29,6 @@ export class RecordingSetupPrompt implements Prompt {
 		option({value: "-1"}, "before"),
 		option({value: "1"}, "after"),
 	);
-	private readonly _recordingOffset: HTMLInputElement = select({style: "width: 2em; margin-left: 1em", type: "number", step: "1"});
 	private readonly _keyboardLayoutPreview: HTMLDivElement = div({style: "display: grid; row-gap: 4px; margin: 4px auto; font-size: 10px;"});
 	private readonly _enableMidi: HTMLInputElement = input({style: "width: 2em; margin-left: 1em;", type: "checkbox"});
 	private readonly _showRecordButton: HTMLInputElement = input({style: "width: 2em; margin-left: 1em;", type: "checkbox"});
@@ -81,11 +80,6 @@ export class RecordingSetupPrompt implements Prompt {
 				this._enableMidi,
 			),
 			p("The range of pitches available to play via your computer keyboard is affected by the octave scrollbar of the currently selected channel."),
-			p("When using a MIDI keyboard for large EDOs, you'll often be restricted by default to a very low range of notes. Changing the setting below allows you to offset all MIDI keyboards by a certain number of octaves, so you can play those high notes."),
-			label({style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;"},
-				"Octave Offset:",
-				div({class: "inline-block; text-align: left"}, this._recordingOffset),
-			),
 			p("If you set the channel offset below to 'before' or 'after', notes below the middle octave in the view will be 'bass' notes, and placed in the channel before or after the viewed one. Using this, you can play bass and lead at the same time!"),
 			label({style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;"},
 				"Bass Offset:",
@@ -106,9 +100,6 @@ export class RecordingSetupPrompt implements Prompt {
 		this._keyboardLayout.value = this._doc.prefs.keyboardLayout;
 		this._bassOffset.value = String(this._doc.prefs.bassOffset);
 		this._enableMidi.checked = this._doc.prefs.enableMidi;
-		this._recordingOffset.value = this._doc.prefs.recordingOffset + "";
-		this._recordingOffset.min = "-2";
-		this._recordingOffset.max = "5";
 		this._showRecordButton.checked = this._doc.prefs.showRecordButton;
 		this._snapRecordedNotesToRhythm.checked = this._doc.prefs.snapRecordedNotesToRhythm;
 		this._ignorePerformedNotesNotInScale.checked = this._doc.prefs.ignorePerformedNotesNotInScale;
@@ -119,8 +110,6 @@ export class RecordingSetupPrompt implements Prompt {
 		
 		this._okayButton.addEventListener("click", this._confirm);
 		this._cancelButton.addEventListener("click", this._close);
-		this._recordingOffset.addEventListener("keypress", RecordingSetupPrompt._validateKey);
-		this._recordingOffset.addEventListener("blur", RecordingSetupPrompt._validateNumber);
 		this.container.addEventListener("keydown", this._whenKeyPressed);
 		
 		this._renderKeyboardLayoutPreview();
@@ -135,8 +124,6 @@ export class RecordingSetupPrompt implements Prompt {
 	public cleanUp = (): void => { 
 		this._okayButton.removeEventListener("click", this._confirm);
 		this._cancelButton.removeEventListener("click", this._close);
-		this._recordingOffset.removeEventListener("keypress", RecordingSetupPrompt._validateKey);
-		this._recordingOffset.removeEventListener("blur", RecordingSetupPrompt._validateNumber);
 		this.container.removeEventListener("keydown", this._whenKeyPressed);
 	}
 	
@@ -145,31 +132,12 @@ export class RecordingSetupPrompt implements Prompt {
 			this._confirm();
 		}
 	}
-
-	private static _validateKey(event: KeyboardEvent): boolean {
-		const charCode = (event.which) ? event.which : event.keyCode;
-		if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
-			event.preventDefault();
-				return true;
-		}
-		return false;
-	}
-		
-	private static _validateNumber(event: Event): void {
-		const input: HTMLInputElement = <HTMLInputElement>event.target;
-		input.value = String(RecordingSetupPrompt._validate(input));
-	}
-
-		private static _validate(input: HTMLInputElement): number {
-		return Math.floor(Math.max(Number(input.min), Math.min(Number(input.max), Number(input.value))));
-	}
 	
 	private _confirm = (): void => { 
 		this._doc.prefs.pressControlForShortcuts = (this._keyboardMode.value == "pressControlForShortcuts");
 		this._doc.prefs.keyboardLayout = this._keyboardLayout.value;
 		this._doc.prefs.bassOffset = Number(this._bassOffset.value);
 		this._doc.prefs.enableMidi = this._enableMidi.checked;
-		this._doc.prefs.recordingOffset = Number(this._bassOffset.value);
 		this._doc.prefs.showRecordButton = this._showRecordButton.checked;
 		this._doc.prefs.snapRecordedNotesToRhythm = this._snapRecordedNotesToRhythm.checked;
 		this._doc.prefs.ignorePerformedNotesNotInScale = this._ignorePerformedNotesNotInScale.checked;
@@ -201,8 +169,6 @@ export class RecordingSetupPrompt implements Prompt {
 							key.style.background = ColorConfig.tonic;
 						} else if (scalePitch == Math.round(this._doc.song.edo*Math.log2(3/2)) && this._doc.prefs.showFifth) {
 							key.style.background = ColorConfig.fifthNote;
-						} else if (scalePitch == Math.round(this._doc.song.edo*Math.log2(5/4)) && this._doc.prefs.showThird) {
-							key.style.background = ColorConfig.thirdNote;
 						} else {
 							key.style.background = ColorConfig.pitchBackground;
 						}
