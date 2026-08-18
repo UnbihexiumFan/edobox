@@ -95,13 +95,13 @@ export class MidiInputHandler {
 			}
 		} else {
 			key -= createKeys(this._doc.song.edo)[this._doc.song.key].basePitch; // The basePitch of the song key is implicit so don't include it.
+			key += this._doc.song.edo * this._doc.prefs.recordingOffset;
 			if (key < 0 || key > this._doc.song.edo * Config.pitchOctaves) return;
 		}
 		
 		if (eventType == MidiEventType.noteOn && velocity == 0) {
 			eventType = MidiEventType.noteOff;
 		}
-		
 		switch (eventType) {
 			case MidiEventType.noteOn:
 				this._doc.synth.preferLowerLatency = true;
