@@ -132,7 +132,17 @@ export function createScales(edo: number): DictionaryArray<Scale> {
     let realScaleName: string;
     let modeNames: Array<string>;
     scaleArray.push({ "index": 0, "name": "Free", "realName": edo.toString()+"edo", "flags": Array(edo).fill(true) });
-
+    
+    for (let e = 5; e <= 8; e++) { //whole tone scales from 5edo-8edo
+            if ((edo % e == 0) && !(edo == e)) {
+                let thatFlags = Array(edo).fill(false);
+                for (let i = 0; i < e; i++) {
+                    thatFlags[Math.round(i * edo / e)] = true;
+                }
+                scaleArray.push({ "index": 1, "name": "Whole Tone Scale (" + e.toString() + "edo)", "realName": e.toString() + "edo", "flags": thatFlags });
+            }
+        }
+    
     let bestGen: number = Math.round(Math.log2(3/2)*edo); // diatonic
     let ratioGen: number = bestGen/edo;
     if (ratioGen >= 4/7 && ratioGen < 3/5) {
@@ -231,11 +241,43 @@ export function createScales(edo: number): DictionaryArray<Scale> {
         scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 9, realScaleName);
     }
 
+    bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/6 && ratioGen < 1/5) {
+        realScaleName = "machinoid";
+        modeNames = ["Ionian", "Mixolydian", "Dorian", "Aeolian", "Phrygian", "Locrian"];
+        modeNames = appendToListItems(modeNames, " Hexatonic", false);
+        scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 6, realScaleName);
+    }
+
+    bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/7 && ratioGen < 1/6) {
+        realScaleName = "archaeotonic";
+        modeNames = ["Ryonian", "Karakalian", "Lobonian", "Horthathian", "Oukranian", "Tamashian", "Zo-Kalarian"];
+        scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
+    }
+
+    bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/8 && ratioGen < 1/7) {
+        realScaleName = "Machinoid";
+        modeNames = ["Ryonian", "Karakalian", "Lobonian", "Horthathian", "Oukranian", "Tamashian", "Zo-Kalarian"].reverse();
+        modeNames = appendToListItems(modeNames, "Anti-", true);
+        scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
+    }
+
     return toNameMap(scaleArray);
 }
 
 export function createBreaks(edo: number): Array<number>  {
     let breaks: Array<number> = [1];
+    for (let i = 5; i <= 8; i++) { 
+        if (edo % i == 0) { 
+            breaks[0]++
+        }
+    }
+
     let bestGen: number = Math.round(Math.log2(3/2)*edo); // diatonic
     let ratioGen: number = bestGen/edo;
     if (ratioGen >= 4/7 && ratioGen < 3/5) {
@@ -294,6 +336,24 @@ export function createBreaks(edo: number): Array<number>  {
     if (ratioGen > 7/9 && ratioGen < 4/5) {
         breaks.push(breaks[breaks.length-1]+5);
         breaks.push(breaks[breaks.length-1]+9);
+    }
+
+    bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/6 && ratioGen < 1/5) {
+        breaks.push(breaks[breaks.length-1]+6);
+    }
+
+    bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/7 && ratioGen < 1/6) {
+        breaks.push(breaks[breaks.length-1]+7);
+    }
+
+    bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/8 && ratioGen < 1/7) {
+        breaks.push(breaks[breaks.length-1]+7);
     }
 
     return breaks;
@@ -360,6 +420,24 @@ export function createBreakNames(edo: number): Array<string>  {
     if (ratioGen > 7/9 && ratioGen < 4/5) {
         breaks.push("Semiquartal-oid pentatonic");
         breaks.push("Semiquartal");
+    }
+
+    bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/6 && ratioGen < 1/5) {
+        breaks.push("Machinoid");
+    }
+
+    bestGen = Math.round(Math.log2(10/9)*edo); //archaeotonic
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/7 && ratioGen < 1/6) {
+        breaks.push("Archaeotonic");
+    }
+
+    bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); //onyx
+    ratioGen = bestGen/edo;
+    if (ratioGen > 1/8 && ratioGen < 1/7) {
+        breaks.push("Onyx");
     }
 
     return breaks;

@@ -1447,6 +1447,7 @@ var beepbox = (function (exports) {
 				--pitch-background: #444;
 				--tonic: #864;
 				--fifth-note: #468;
+                --third-note: #636;
 				--white-piano-key: #bbb;
 				--black-piano-key: #444;
 					--use-color-formula: false;
@@ -1565,6 +1566,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #353333;
 					--tonic: #884a44;
 					--fifth-note: #415498;
+                    --third-note: #673e77;
 					--white-piano-key: #bbb;
 					--black-piano-key: #444;
 					--use-color-formula: false;
@@ -1685,6 +1687,7 @@ var beepbox = (function (exports) {
 				--pitch-background: #ececec;
 				--tonic: #f0d6b6;
 				--fifth-note: #bbddf0;
+                --third-note: #f1a2ed;
 				--white-piano-key: #eee;
 				--black-piano-key: #666;
 					--use-color-formula: false;
@@ -1811,6 +1814,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #393e4f;
 					--tonic: #725491;
 					--fifth-note: #54547a;
+                    --third-note: #744b70;
 					--white-piano-key: #eee;
 					--black-piano-key: #666;
 					--use-color-formula: true;
@@ -1925,6 +1929,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #393e4f;
 					--tonic:rgb(148, 93, 80);
 					--fifth-note:rgb(71, 138, 97);
+                    --third-note: rgb(125, 68, 136);
 					--white-piano-key:rgb(238, 219, 198);
 					--black-piano-key:rgb(114, 105, 95);
 					--use-color-formula: true;
@@ -2039,6 +2044,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #203829;
 					--tonic: #2b8d20;
 					--fifth-note: #385840;
+                    --third-note: #416b62;
 					--white-piano-key: #bda;
 					--black-piano-key: #573;
 					--use-color-formula: true;
@@ -2153,6 +2159,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #4f3939;
 					--tonic: #9e4145;
 					--fifth-note: #5b3e6b;
+                    --third-note: #7c3f5d;
 					--white-piano-key: #d89898;
 					--black-piano-key: #572b29;
 					--use-color-formula: true;
@@ -2267,6 +2274,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #222121;
 			--tonic: #555955;
 			--fifth-note: #1a1818;
+            --third-note: #33333b;
 			--white-piano-key: #a89e9e;
 			--black-piano-key: #2d2424;
 			--use-color-formula: true;
@@ -2382,6 +2390,7 @@ var beepbox = (function (exports) {
 					--pitch-background: #e2d9f9;
 					--tonic: #c288cc;
 					--fifth-note: #d8c9fd;
+                    --third-note: #f2aeec;
 					--white-piano-key: #e2e2ff;
 					--black-piano-key: #66667a;
 					--use-color-formula: true;
@@ -2504,6 +2513,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #2c3155;
 			--tonic: #a32f6e;
 			--fifth-note: #0044a0;
+            --third-note: #76038f;
 			--white-piano-key: #fff;
 			--black-piano-key: #202d42;
 			--use-color-formula: false;
@@ -2624,6 +2634,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #15111a;
 			--tonic: #1b3041;
 			--fifth-note: #381818;
+            --third-note: #200f24;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -2741,6 +2752,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #223849;
 			--tonic: #33536c;
 			--fifth-note: hsl(206deg 36% 16%);
+            --third-note: #2d302e;
 			--white-piano-key: #c1bfe9;
 			--black-piano-key: #454354;
 			--use-color-formula: false;
@@ -2858,6 +2870,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #121212;
 			--tonic: #4f4f4f;
 			--fifth-note: #222;
+            --third-note: #616161;
 			--white-piano-key: #b59b9b;
 			--black-piano-key: #231e1e;
 			--use-color-formula: false;
@@ -2975,6 +2988,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #101010;
 			--tonic: #2c2d34;
 			--fifth-note: #191a20;
+            --third-note: #1b1b1c;
 			--white-piano-key: #bbbaba;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -3092,6 +3106,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #141414;
 			--tonic: #2C212B;
 			--fifth-note: #2E2A15;
+            --third-note: #21140B;
 			--white-piano-key: #bbbaba;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -3209,6 +3224,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #141c15;
 			--tonic: #282c21;
 			--fifth-note: #18221a;
+            --third-note: #1d2024;
 			--white-piano-key: #e3e3e3;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -3326,6 +3342,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #293b52;
 			--tonic: #5b46ad;
 			--fifth-note: #42604d;
+            --third-note: #354c61;
 			--white-piano-key: #f6e8ff;
 			--black-piano-key: #5a4972;
 			--use-color-formula: true;
@@ -3439,6 +3456,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #1b263e;
 			--tonic: #995d00;
 			--fifth-note: #0898a1;
+            --third-note: #838a7c;
 			--white-piano-key: #ffffff;
 			--black-piano-key: #516d7a;
 			--use-color-formula: false;
@@ -3555,6 +3573,7 @@ var beepbox = (function (exports) {
 			--pitch-background: hsl(61deg 100% 70% / 25%);
 			--tonic: #66a3ff40;
 			--fifth-note: #ff666640;
+            --third-note: #f266ff40;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -3671,6 +3690,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #ffffff;
 			--tonic: #bbbbbb;
 			--fifth-note: #dcdcdc;
+            --third-note: #d6d6d6;
 			--white-piano-key: #ffffff;
 			--black-piano-key: #615f66;
 			--use-color-formula: false;
@@ -3788,6 +3808,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #393e4f40;
 			--tonic: #7D5C9EC0;
 			--fifth-note: #ab77bd50;
+            --third-note: #8f5bab70;
 			--white-piano-key: #EEEEEE;
 			--black-piano-key: #5F5566;
 			--use-color-formula: true;
@@ -3901,6 +3922,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #d0c7db;
 			--tonic: #bed3e4;
 			--fifth-note: #e7c6c6;
+            --third-note: #e373ff;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -4018,6 +4040,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #001410;
 			--tonic: #00241d;
 			--fifth-note: #ffff6633;
+            --third-note: #52275c44;
 			--white-piano-key: #66998f;
 			--black-piano-key: #141f1d;
 			--use-color-formula: false;
@@ -4134,6 +4157,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #1e1106;
 			--tonic: #382414;
 			--fifth-note: #41240c;
+            --third-note: #38291d;
 			--white-piano-key: #e1c5b7;
 			--black-piano-key: #482c1e;
 			--use-color-formula: false;
@@ -4250,6 +4274,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #1a1a1a;
 			--tonic: #262626;
 			--fifth-note: #0d0d0d;
+            --third-note: #1c1c1c;
 			--white-piano-key: #808080;
 			--black-piano-key: #232323;
 			--use-color-formula: true;
@@ -4362,6 +4387,7 @@ var beepbox = (function (exports) {
 			--pitch-background: #22272D;
 			--tonic: #1b3056;
 			--fifth-note: #344051;
+            --third-note: #192436;
 			--white-piano-key: #a6c6ed;
 			--black-piano-key: #2f4687;
 			--use-color-formula: false;
@@ -4478,6 +4504,7 @@ var beepbox = (function (exports) {
     ColorConfig.pitchBackground = "var(--pitch-background)";
     ColorConfig.tonic = "var(--tonic)";
     ColorConfig.fifthNote = "var(--fifth-note)";
+    ColorConfig.thirdNote = "var(--third-note)";
     ColorConfig.whitePianoKey = "var(--white-piano-key)";
     ColorConfig.blackPianoKey = "var(--black-piano-key)";
     ColorConfig.useColorFormula = "var(--use-color-formula)";
@@ -7162,6 +7189,17 @@ li.select2-results__option[role=group] > strong:hover {
         let realScaleName;
         let modeNames;
         scaleArray.push({ "index": 0, "name": "Free", "realName": edo.toString() + "edo", "flags": Array(edo).fill(true) });
+        
+        for (let e = 5; e <= 8; e++) { //whole tone scales from 5edo-8edo
+            if ((edo % e == 0) && !(edo == e)) {
+                let thatFlags = Array(edo).fill(false);
+                for (let i = 0; i < e; i++) {
+                    thatFlags[Math.round(i * edo / e)] = true;
+                }
+                scaleArray.push({ "index": 1, "name": "Whole Tone Scale (" + e.toString() + "edo)", "realName": e.toString() + "edo", "flags": thatFlags });
+            }
+        }
+        
         let bestGen = Math.round(Math.log2(3 / 2) * edo);
         let ratioGen = bestGen / edo;
         if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) {
@@ -7252,10 +7290,39 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = appendToListItems(modeNames, "Anti-", true);
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 9, realScaleName);
         }
-        return toNameMap(scaleArray);
-    }
+        bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/6 && ratioGen < 1/5) {
+            realScaleName = "machinoid";
+            modeNames = ["Ionian", "Mixolydian", "Dorian", "Aeolian", "Phrygian", "Locrian"];
+            modeNames = appendToListItems(modeNames, " Hexatonic", false);
+            scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 6, realScaleName);
+        }
+        bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/7 && ratioGen < 1/6) {
+            realScaleName = "archaeotonic";
+            modeNames = ["Ryonian", "Karakalian", "Lobonian", "Horthathian", "Oukranian", "Tamashian", "Zo-Kalarian"];
+            scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
+        }
+        bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/8 && ratioGen < 1/7) {
+            realScaleName = "Machinoid";
+            modeNames = ["Ryonian", "Karakalian", "Lobonian", "Horthathian", "Oukranian", "Tamashian", "Zo-Kalarian"].reverse();
+            modeNames = appendToListItems(modeNames, "Anti-", true);
+            scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
+        }
+
+            return toNameMap(scaleArray);
+        }
     function createBreaks(edo) {
         let breaks = [1];
+        for (let i = 5; i <= 8; i++) { 
+            if (edo % i == 0) { 
+                breaks[0]++
+            }
+        }
         let bestGen = Math.round(Math.log2(3 / 2) * edo);
         let ratioGen = bestGen / edo;
         if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) {
@@ -7308,6 +7375,22 @@ li.select2-results__option[role=group] > strong:hover {
             breaks.push(breaks[breaks.length - 1] + 5);
             breaks.push(breaks[breaks.length - 1] + 9);
         }
+            bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/6 && ratioGen < 1/5) {
+            breaks.push(breaks[breaks.length-1]+6);
+        }
+        bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/7 && ratioGen < 1/6) {
+            breaks.push(breaks[breaks.length-1]+7);
+        }
+        bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/8 && ratioGen < 1/7) {
+            breaks.push(breaks[breaks.length-1]+7);
+        }
+
         return breaks;
     }
     function createBreakNames(edo) {
@@ -7363,6 +7446,21 @@ li.select2-results__option[role=group] > strong:hover {
         if (ratioGen > 7 / 9 && ratioGen < 4 / 5) {
             breaks.push("Semiquartal-oid pentatonic");
             breaks.push("Semiquartal");
+        }
+        bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo);
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/6 && ratioGen < 1/5) {
+            breaks.push("Machinoid");
+        }
+        bestGen = Math.round(Math.log2(10/9)*edo);
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/7 && ratioGen < 1/6) {
+            breaks.push("Archaeotonic");
+        }
+        bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo);
+        ratioGen = bestGen/edo;
+        if (ratioGen > 1/8 && ratioGen < 1/7) {
+            breaks.push("Onyx");
         }
         return breaks;
     }
@@ -24147,6 +24245,7 @@ You should be redirected to the song at:<br /><br />
                 }
                 else {
                     key -= createKeys(this._doc.song.edo)[this._doc.song.key].basePitch;
+                    key += this._doc.prefs.recordingOffset * this._doc.song.edo;
                     if (key < 0 || key > this._doc.song.edo * Config.pitchOctaves)
                         return;
                 }
@@ -24525,6 +24624,7 @@ You should be redirected to the song at:<br /><br />
             this._renderedBeatWidth = -1;
             this._renderedPitchHeight = -1;
             this._renderedFifths = false;
+            this._renderedThirds = false;
             this._renderedDrums = false;
             this._renderedMod = false;
             this._renderedRhythm = -1;
@@ -26494,6 +26594,10 @@ You should be redirected to the song at:<br /><br />
                 this._renderedFifths = this._doc.prefs.showFifth;
                 this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.prefs.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
             }
+            if (this._renderedThirds != this._doc.prefs.showThird) {
+                this._renderedThirds = this._doc.prefs.showThird;
+                this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(5 / 4))].setAttribute("fill", this._doc.prefs.showThird ? ColorConfig.thirdNote : ColorConfig.pitchBackground);
+            }
             for (let j = 0; j < this._doc.song.edo; j++) {
                 this._backgroundPitchRows[j].style.visibility = createScales(this._doc.song.edo)[this._doc.song.scale].flags[j] ? "visible" : "hidden";
             }
@@ -27437,6 +27541,7 @@ You should be redirected to the song at:<br /><br />
             this._keyboardMode = select$2({ style: "width: 100%;" }, option$2({ value: "useCapsLockForNotes" }, "simple shortcuts, use caps lock to play notes"), option$2({ value: "pressControlForShortcuts" }, "simple notes, press " + EditorConfig.ctrlName + " for shortcuts"));
             this._keyboardLayout = select$2({ style: "width: 100%;" }, option$2({ value: "wickiHayden" }, "Wicki-Hayden"), option$2({ value: "songScale" }, "selected song scale"), option$2({ value: "pianoAtC" }, "piano starting at C :)"), option$2({ value: "pianoAtA" }, "piano starting at A :("), option$2({ value: "pianoTransposingC" }, "piano transposing C :) to song key"), option$2({ value: "pianoTransposingA" }, "piano transposing A :( to song key"));
             this._bassOffset = select$2({ style: "width: 100%;" }, option$2({ value: "0" }, "disabled"), option$2({ value: "-1" }, "before"), option$2({ value: "1" }, "after"));
+            this._recordingOffset = input$1({style: "width: 2em; margin-left: 1em", type: "number", step: "1"});
             this._keyboardLayoutPreview = div$3({ style: "display: grid; row-gap: 4px; margin: 4px auto; font-size: 10px;" });
             this._enableMidi = input$1({ style: "width: 2em; margin-left: 1em;", type: "checkbox" });
             this._showRecordButton = input$1({ style: "width: 2em; margin-left: 1em;", type: "checkbox" });
@@ -27446,7 +27551,7 @@ You should be redirected to the song at:<br /><br />
             this._metronomeWhileRecording = input$1({ style: "width: 2em; margin-left: 1em;", type: "checkbox" });
             this._okayButton = button$3({ class: "okayButton", style: "width:45%;" }, "Okay");
             this._cancelButton = button$3({ class: "cancelButton" });
-            this.container = div$3({ class: "prompt noSelection recordingSetupPrompt", style: "width: 600px; text-align: right; max-height: 90%;" }, h2$2({ style: "align-self: center;" }, "Note Recording Setup"), div$3({ style: "display: grid; overflow-y: auto; overflow-x: hidden; flex-shrink: 1;" }, p$1("JummBox can record notes as you perform them. You can start recording by pressing Ctrl+Space (or " + EditorConfig.ctrlSymbol + "P)."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Add ● record button next to ▶ play button:", this._showRecordButton), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Snap recorded notes to the song's rhythm:", this._snapRecordedNotesToRhythm), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Ignore notes not in the song's scale:", this._ignorePerformedNotesNotInScale), p$1("While recording, you can perform notes on your keyboard!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Keyboard layout:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._keyboardLayout)), this._keyboardLayoutPreview, p$1("When not recording, you can use the computer keyboard either for shortcuts (like C and V for copy and paste) or for performing notes, depending on this mode:"), label({ style: "display: flex; margin-top: 0.5em; margin-bottom: 0.5em; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, div$3({ class: "selectContainer", style: "width: 50%;" }, this._keyboardMode)), p$1("Performing music takes practice! Try slowing the tempo and using this metronome to help you keep a rhythm."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Hear metronome while recording:", this._metronomeWhileRecording), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Count-in 1 bar of metronome before recording:", this._metronomeCountIn), p$1("If you have a ", a({ href: "https://caniuse.com/midi", target: "_blank" }, "compatible browser"), " on a device connected to a MIDI keyboard, you can use it to perform notes in JummBox! (Or you could buy ", a({ href: "https://imitone.com/", target: "_blank" }, "Imitone"), " or ", a({ href: "https://vochlea.com/", target: "_blank" }, "Dubler"), " to hum notes into a microphone while wearing headphones!)"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; height: 2em; justify-content: center;" }, "Enable MIDI performance:", this._enableMidi), p$1("The range of pitches available to play via your computer keyboard is affected by the octave scrollbar of the currently selected channel."), p$1("If you set the channel offset below to 'before' or 'after', notes below the middle octave in the view will be 'bass' notes, and placed in the channel before or after the viewed one. Using this, you can play bass and lead at the same time!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Bass Offset:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._bassOffset)), p$1("Once you enable the setting, the keyboard layout above will darken to denote the new bass notes. The notes will be recorded with independent timing and this works with MIDI devices, too. Be aware that the octave offset of both used channels will impact how high/low the bass/lead are relative to one another."), p$1("Recorded notes often overlap such that one note ends after the next note already started. In JummBox, these notes get split into multiple notes which may sound different when re-played than they did when you were recording. To fix the sound, you can either manually clean up the notes in the pattern editor, or you could try enabling the \"transition type\" effect on the instrument and setting it to \"continue\"."), div$3({ style: `width: 100%; height: 80px; background: linear-gradient(rgba(0,0,0,0), ${ColorConfig.editorBackground}); position: sticky; bottom: 0; pointer-events: none;` })), div$3({ style: "display: flex; flex-direction: row-reverse; justify-content: space-between;" }, this._okayButton), this._cancelButton);
+            this.container = div$3({ class: "prompt noSelection recordingSetupPrompt", style: "width: 600px; text-align: right; max-height: 90%;" }, h2$2({ style: "align-self: center;" }, "Note Recording Setup"), div$3({ style: "display: grid; overflow-y: auto; overflow-x: hidden; flex-shrink: 1;" }, p$1("JummBox can record notes as you perform them. You can start recording by pressing Ctrl+Space (or " + EditorConfig.ctrlSymbol + "P)."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Add ● record button next to ▶ play button:", this._showRecordButton), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Snap recorded notes to the song's rhythm:", this._snapRecordedNotesToRhythm), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Ignore notes not in the song's scale:", this._ignorePerformedNotesNotInScale), p$1("While recording, you can perform notes on your keyboard!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Keyboard layout:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._keyboardLayout)), this._keyboardLayoutPreview, p$1("When not recording, you can use the computer keyboard either for shortcuts (like C and V for copy and paste) or for performing notes, depending on this mode:"), label({ style: "display: flex; margin-top: 0.5em; margin-bottom: 0.5em; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, div$3({ class: "selectContainer", style: "width: 50%;" }, this._keyboardMode)), p$1("Performing music takes practice! Try slowing the tempo and using this metronome to help you keep a rhythm."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Hear metronome while recording:", this._metronomeWhileRecording), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Count-in 1 bar of metronome before recording:", this._metronomeCountIn), p$1("If you have a ", a({ href: "https://caniuse.com/midi", target: "_blank" }, "compatible browser"), " on a device connected to a MIDI keyboard, you can use it to perform notes in JummBox! (Or you could buy ", a({ href: "https://imitone.com/", target: "_blank" }, "Imitone"), " or ", a({ href: "https://vochlea.com/", target: "_blank" }, "Dubler"), " to hum notes into a microphone while wearing headphones!)"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; height: 2em; justify-content: center;" }, "Enable MIDI performance:", this._enableMidi), p$1("The range of pitches available to play via your computer keyboard is affected by the octave scrollbar of the currently selected channel."), p$1("When using a MIDI keyboard for large EDOs, you'll often be restricted by default to a very low range of notes. Changing the setting below allows you to offset all MIDI keyboards by a certain number of octaves, so you can play those high notes."), label({style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;"}, "Octave Offset:", div({class: "inline-block; text-align: left"}, this._recordingOffset)), p$1("If you set the channel offset below to 'before' or 'after', notes below the middle octave in the view will be 'bass' notes, and placed in the channel before or after the viewed one. Using this, you can play bass and lead at the same time!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Bass Offset:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._bassOffset)), p$1("Once you enable the setting, the keyboard layout above will darken to denote the new bass notes. The notes will be recorded with independent timing and this works with MIDI devices, too. Be aware that the octave offset of both used channels will impact how high/low the bass/lead are relative to one another."), p$1("Recorded notes often overlap such that one note ends after the next note already started. In JummBox, these notes get split into multiple notes which may sound different when re-played than they did when you were recording. To fix the sound, you can either manually clean up the notes in the pattern editor, or you could try enabling the \"transition type\" effect on the instrument and setting it to \"continue\"."), div$3({ style: `width: 100%; height: 80px; background: linear-gradient(rgba(0,0,0,0), ${ColorConfig.editorBackground}); position: sticky; bottom: 0; pointer-events: none;` })), div$3({ style: "display: flex; flex-direction: row-reverse; justify-content: space-between;" }, this._okayButton), this._cancelButton);
             this._close = () => {
                 this._doc.undo();
             };
@@ -27464,6 +27569,7 @@ You should be redirected to the song at:<br /><br />
                 this._doc.prefs.pressControlForShortcuts = (this._keyboardMode.value == "pressControlForShortcuts");
                 this._doc.prefs.keyboardLayout = this._keyboardLayout.value;
                 this._doc.prefs.bassOffset = Number(this._bassOffset.value);
+                this._doc.prefs.recordingOffset = Number(this._recordingOffset.value);
                 this._doc.prefs.enableMidi = this._enableMidi.checked;
                 this._doc.prefs.showRecordButton = this._showRecordButton.checked;
                 this._doc.prefs.snapRecordedNotesToRhythm = this._snapRecordedNotesToRhythm.checked;
@@ -27519,6 +27625,7 @@ You should be redirected to the song at:<br /><br />
             this._keyboardMode.value = this._doc.prefs.pressControlForShortcuts ? "pressControlForShortcuts" : "useCapsLockForNotes";
             this._keyboardLayout.value = this._doc.prefs.keyboardLayout;
             this._bassOffset.value = String(this._doc.prefs.bassOffset);
+            this._recordingOffset.value = String(this._doc.prefs.recordingOffset);
             this._enableMidi.checked = this._doc.prefs.enableMidi;
             this._showRecordButton.checked = this._doc.prefs.showRecordButton;
             this._snapRecordedNotesToRhythm.checked = this._doc.prefs.snapRecordedNotesToRhythm;
@@ -27528,6 +27635,8 @@ You should be redirected to the song at:<br /><br />
             setTimeout(() => this._showRecordButton.focus());
             this._okayButton.addEventListener("click", this._confirm);
             this._cancelButton.addEventListener("click", this._close);
+            this._recordingOffset.addEventListener("keypress", RecordingSetupPrompt._validateKey);
+            this._recordingOffset.addEventListener("blur", RecordingSetupPrompt._validateNumber);
             this.container.addEventListener("keydown", this._whenKeyPressed);
             this._renderKeyboardLayoutPreview();
             this._keyboardLayout.addEventListener("change", this._renderKeyboardLayoutPreview);
@@ -28709,7 +28818,7 @@ You should be redirected to the song at:<br /><br />
             this._volumeBarBox = div({ class: "playback-volume-bar", style: "height: 12px; align-self: center;" }, this._volumeBarContainer);
             this._fileMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "File"), option({ value: "new" }, "+ New Blank Song"), option({ value: "import" }, "↑ Import Song... (" + EditorConfig.ctrlSymbol + "O)"), option({ value: "export" }, "↓ Export Song... (" + EditorConfig.ctrlSymbol + "S)"), option({ value: "copyUrl" }, "⎘ Copy Song URL"), option({ value: "shareUrl" }, "⤳ Share Song URL"), option({ value: "shortenUrl" }, "… Shorten Song URL"), option({ value: "viewPlayer" }, "▶ View in Song Player"), option({ value: "copyEmbed" }, "⎘ Copy HTML Embed Code"), option({ value: "songRecovery" }, "⚠ Recover Recent Song..."));
             this._editMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "Edit"), option({ value: "undo" }, "Undo (Z)"), option({ value: "redo" }, "Redo (Y)"), option({ value: "copy" }, "Copy Pattern (C)"), option({ value: "pasteNotes" }, "Paste Pattern Notes (V)"), option({ value: "pasteNumbers" }, "Paste Pattern Numbers (" + EditorConfig.ctrlSymbol + "⇧V)"), option({ value: "insertBars" }, "Insert Bar (⏎)"), option({ value: "deleteBars" }, "Delete Selected Bars (⌫)"), option({ value: "insertChannel" }, "Insert Channel (" + EditorConfig.ctrlSymbol + "⏎)"), option({ value: "deleteChannel" }, "Delete Selected Channels (" + EditorConfig.ctrlSymbol + "⌫)"), option({ value: "selectChannel" }, "Select Channel (⇧A)"), option({ value: "selectAll" }, "Select All (A)"), option({ value: "duplicatePatterns" }, "Duplicate Reused Patterns (D)"), option({ value: "transposeUp" }, "Move Notes Up (+ or ⇧+)"), option({ value: "transposeDown" }, "Move Notes Down (- or ⇧-)"), option({ value: "moveNotesSideways" }, "Move All Notes Sideways... (W)"), option({ value: "beatsPerBar" }, "Change Beats Per Bar..."), option({ value: "barCount" }, "Change Song Length... (L)"), option({ value: "edo" }, "Change EDO..."), option({ value: "channelSettings" }, "Channel Settings... (Q)"), option({ value: "limiterSettings" }, "Limiter Settings... (⇧L)"));
-            this._optionsMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "Preferences"), option({ value: "autoPlay" }, "Auto Play on Load"), option({ value: "autoFollow" }, "Auto Follow Playhead"), option({ value: "enableNotePreview" }, "Hear Added Notes"), option({ value: "showLetters" }, "Show Piano Keys"), option({ value: "showFifth" }, 'Highlight "Fifth" Note'), option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"), option({ value: "showChannels" }, "Show All Channels"), option({ value: "showScrollBar" }, "Show Octave Scroll Bar"), option({ value: "alwaysFineNoteVol" }, "Always Fine Note Volume"), option({ value: "enableChannelMuting" }, "Enable Channel Muting"), option({ value: "displayBrowserUrl" }, "Show Song Data in URL"), option({ value: "displayVolumeBar" }, "Show Playback Volume"), option({ value: "layout" }, "Set Layout..."), option({ value: "colorTheme" }, "Set Theme..."), option({ value: "recordingSetup" }, "Note Recording..."));
+            this._optionsMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "Preferences"), option({ value: "autoPlay" }, "Auto Play on Load"), option({ value: "autoFollow" }, "Auto Follow Playhead"), option({ value: "enableNotePreview" }, "Hear Added Notes"), option({ value: "showLetters" }, "Show Piano Keys"), option({ value: "showFifth" }, 'Highlight "Fifth" Note'), option({ value: "showThird" }, 'Highlight "Third" Note'), option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"), option({ value: "showChannels" }, "Show All Channels"), option({ value: "showScrollBar" }, "Show Octave Scroll Bar"), option({ value: "alwaysFineNoteVol" }, "Always Fine Note Volume"), option({ value: "enableChannelMuting" }, "Enable Channel Muting"), option({ value: "displayBrowserUrl" }, "Show Song Data in URL"), option({ value: "displayVolumeBar" }, "Show Playback Volume"), option({ value: "layout" }, "Set Layout..."), option({ value: "colorTheme" }, "Set Theme..."), option({ value: "recordingSetup" }, "Note Recording..."));
             this._scaleSelect = buildScaleOptions(select(), createScales(this._doc.song.edo).map(scale => scale.name), createBreaks(this._doc.song.edo), createBreakNames(this._doc.song.edo));
             this._keySelect = buildOptions(select(), createKeys(this._doc.song.edo).map(key => key.name).reverse());
             this._tempoSlider = new Slider(input({ style: "margin: 0; vertical-align: middle;", type: "range", min: "30", max: "320", value: "160", step: "1" }), this._doc, (oldValue, newValue) => new ChangeTempo(this._doc, oldValue, newValue), false);
@@ -29008,6 +29117,7 @@ You should be redirected to the song at:<br /><br />
                     (prefs.enableNotePreview ? "✓ " : "　") + "Hear Added Notes",
                     (prefs.showLetters ? "✓ " : "　") + "Show Piano Keys",
                     (prefs.showFifth ? "✓ " : "　") + 'Highlight "Fifth" Note',
+                    (prefs.showThird ? "✓ " : "　") + 'Highlight "Third" Note',
                     (prefs.notesOutsideScale ? "✓ " : "　") + "Place Notes Out of Scale",
                     (prefs.showChannels ? "✓ " : "　") + "Show All Channels",
                     (prefs.showScrollBar ? "✓ " : "　") + "Show Octave Scroll Bar",
@@ -30239,6 +30349,7 @@ You should be redirected to the song at:<br /><br />
                             this._doc.prefs.autoFollow = false;
                             this._doc.prefs.enableNotePreview = true;
                             this._doc.prefs.showFifth = true;
+                            this._doc.prefs.showThird = true;
                             this._doc.prefs.notesOutsideScale = false;
                             this._doc.prefs.showLetters = true;
                             this._doc.prefs.showChannels = true;
@@ -31022,6 +31133,9 @@ You should be redirected to the song at:<br /><br />
                         break;
                     case "showFifth":
                         this._doc.prefs.showFifth = !this._doc.prefs.showFifth;
+                        break;
+                    case "showThird":
+                        this._doc.prefs.showThird = !this._doc.prefs.showThird;
                         break;
                     case "notesOutsideScale":
                         this._doc.prefs.notesOutsideScale = !this._doc.prefs.notesOutsideScale;
@@ -33013,6 +33127,7 @@ You should be redirected to the song at:<br /><br />
             this.autoFollow = window.localStorage.getItem("autoFollow") != "false";
             this.enableNotePreview = window.localStorage.getItem("enableNotePreview") != "false";
             this.showFifth = window.localStorage.getItem("showFifth") == "true";
+            this.showThird = window.localStorage.getItem("showThird") == "true";
             this.notesOutsideScale = window.localStorage.getItem("notesOutsideScale") == "true";
             this.showLetters = window.localStorage.getItem("showLetters") == "true";
             this.showChannels = window.localStorage.getItem("showChannels") == "true";
@@ -33031,6 +33146,7 @@ You should be redirected to the song at:<br /><br />
             this.metronomeWhileRecording = window.localStorage.getItem("metronomeWhileRecording") != "false";
             this.keyboardLayout = window.localStorage.getItem("keyboardLayout") || "wickiHayden";
             this.bassOffset = (+window.localStorage.getItem("bassOffset")) || 0;
+            this.recordingOffset = (+window.localStorage.getItem("recordingOffset")) || 0;
             this.layout = window.localStorage.getItem("layout") || "small";
             this.colorTheme = window.localStorage.getItem("colorTheme") || "edobox classic";
             this.visibleOctaves = (window.localStorage.getItem("visibleOctaves") >>> 0) || Preferences.defaultVisibleOctaves;
@@ -33048,6 +33164,7 @@ You should be redirected to the song at:<br /><br />
             window.localStorage.setItem("autoFollow", this.autoFollow ? "true" : "false");
             window.localStorage.setItem("enableNotePreview", this.enableNotePreview ? "true" : "false");
             window.localStorage.setItem("showFifth", this.showFifth ? "true" : "false");
+            window.localStorage.setItem("showThird", this.showThird ? "true" : "false");
             window.localStorage.setItem("notesOutsideScale", this.notesOutsideScale ? "true" : "false");
             window.localStorage.setItem("showLetters", this.showLetters ? "true" : "false");
             window.localStorage.setItem("showChannels", this.showChannels ? "true" : "false");
@@ -33066,6 +33183,7 @@ You should be redirected to the song at:<br /><br />
             window.localStorage.setItem("metronomeWhileRecording", this.metronomeWhileRecording ? "true" : "false");
             window.localStorage.setItem("keyboardLayout", this.keyboardLayout);
             window.localStorage.setItem("bassOffset", String(this.bassOffset));
+            window.localStorage.setItem("recordingOffset", String(this.recordingOffset));
             window.localStorage.setItem("layout", this.layout);
             window.localStorage.setItem("colorTheme", this.colorTheme);
             window.localStorage.setItem("volume", String(this.volume));

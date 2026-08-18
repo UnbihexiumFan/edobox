@@ -117,6 +117,7 @@ export class PatternEditor {
     private _renderedBeatWidth: number = -1;
     private _renderedPitchHeight: number = -1;
     private _renderedFifths: boolean = false;
+    private _renderedThirds: boolean = false;
     private _renderedDrums: boolean = false;
     private _renderedMod: boolean = false;
     private _renderedRhythm: number = -1;
@@ -2360,6 +2361,11 @@ export class PatternEditor {
         if (this._renderedFifths != this._doc.prefs.showFifth) {
             this._renderedFifths = this._doc.prefs.showFifth;
             this._backgroundPitchRows[Math.round(this._doc.song.edo*Math.log2(3/2))].setAttribute("fill", this._doc.prefs.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
+        }
+
+        if (this._renderedThirds != this._doc.prefs.showThird) {
+            this._renderedThirds = this._doc.prefs.showThird;
+            this._backgroundPitchRows[Math.round(this._doc.song.edo*Math.log2(5/4))].setAttribute("fill", this._doc.prefs.showThird ? ColorConfig.thirdNote : ColorConfig.pitchBackground);
         }
 
         for (let j: number = 0; j < this._doc.song.edo; j++) {
