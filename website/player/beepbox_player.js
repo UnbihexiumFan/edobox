@@ -1140,7 +1140,6 @@ var beepbox = (function (exports) {
 				--pitch-background: #444;
 				--tonic: #864;
 				--fifth-note: #468;
-                --third-note: #636;
 				--white-piano-key: #bbb;
 				--black-piano-key: #444;
 					--use-color-formula: false;
@@ -1259,7 +1258,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #353333;
 					--tonic: #884a44;
 					--fifth-note: #415498;
-                    --third-note: #673e77;
 					--white-piano-key: #bbb;
 					--black-piano-key: #444;
 					--use-color-formula: false;
@@ -1380,7 +1378,6 @@ var beepbox = (function (exports) {
 				--pitch-background: #ececec;
 				--tonic: #f0d6b6;
 				--fifth-note: #bbddf0;
-                --third-note: #f1a2ed;
 				--white-piano-key: #eee;
 				--black-piano-key: #666;
 					--use-color-formula: false;
@@ -1507,7 +1504,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #393e4f;
 					--tonic: #725491;
 					--fifth-note: #54547a;
-                    --third-note: #744b70;
 					--white-piano-key: #eee;
 					--black-piano-key: #666;
 					--use-color-formula: true;
@@ -1622,7 +1618,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #393e4f;
 					--tonic:rgb(148, 93, 80);
 					--fifth-note:rgb(71, 138, 97);
-                    --third-note: rgb(125, 68, 136);
 					--white-piano-key:rgb(238, 219, 198);
 					--black-piano-key:rgb(114, 105, 95);
 					--use-color-formula: true;
@@ -1737,7 +1732,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #203829;
 					--tonic: #2b8d20;
 					--fifth-note: #385840;
-                    --third-note: #416b62;
 					--white-piano-key: #bda;
 					--black-piano-key: #573;
 					--use-color-formula: true;
@@ -1852,7 +1846,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #4f3939;
 					--tonic: #9e4145;
 					--fifth-note: #5b3e6b;
-                    --third-note: #7c3f5d;
 					--white-piano-key: #d89898;
 					--black-piano-key: #572b29;
 					--use-color-formula: true;
@@ -1967,7 +1960,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #222121;
 			--tonic: #555955;
 			--fifth-note: #1a1818;
-            --third-note: #33333b;
 			--white-piano-key: #a89e9e;
 			--black-piano-key: #2d2424;
 			--use-color-formula: true;
@@ -2083,7 +2075,6 @@ var beepbox = (function (exports) {
 					--pitch-background: #e2d9f9;
 					--tonic: #c288cc;
 					--fifth-note: #d8c9fd;
-                    --third-note: #f2aeec;
 					--white-piano-key: #e2e2ff;
 					--black-piano-key: #66667a;
 					--use-color-formula: true;
@@ -2206,7 +2197,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #2c3155;
 			--tonic: #a32f6e;
 			--fifth-note: #0044a0;
-            --third-note: #76038f;
 			--white-piano-key: #fff;
 			--black-piano-key: #202d42;
 			--use-color-formula: false;
@@ -2327,7 +2317,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #15111a;
 			--tonic: #1b3041;
 			--fifth-note: #381818;
-            --third-note: #200f24;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -2445,7 +2434,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #223849;
 			--tonic: #33536c;
 			--fifth-note: hsl(206deg 36% 16%);
-            --third-note: #2d302e;
 			--white-piano-key: #c1bfe9;
 			--black-piano-key: #454354;
 			--use-color-formula: false;
@@ -2563,7 +2551,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #121212;
 			--tonic: #4f4f4f;
 			--fifth-note: #222;
-            --third-note: #616161;
 			--white-piano-key: #b59b9b;
 			--black-piano-key: #231e1e;
 			--use-color-formula: false;
@@ -2681,7 +2668,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #101010;
 			--tonic: #2c2d34;
 			--fifth-note: #191a20;
-            --third-note: #1b1b1c;
 			--white-piano-key: #bbbaba;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -2799,7 +2785,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #141414;
 			--tonic: #2C212B;
 			--fifth-note: #2E2A15;
-            --third-note: #21140B;
 			--white-piano-key: #bbbaba;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -2917,7 +2902,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #141c15;
 			--tonic: #282c21;
 			--fifth-note: #18221a;
-            --third-note: #1d2024;
 			--white-piano-key: #e3e3e3;
 			--black-piano-key: #2d2d2d;
 			--use-color-formula: false;
@@ -3035,7 +3019,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #293b52;
 			--tonic: #5b46ad;
 			--fifth-note: #42604d;
-            --third-note: #354c61;
 			--white-piano-key: #f6e8ff;
 			--black-piano-key: #5a4972;
 			--use-color-formula: true;
@@ -3149,7 +3132,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #1b263e;
 			--tonic: #995d00;
 			--fifth-note: #0898a1;
-            --third-note: #838a7c;
 			--white-piano-key: #ffffff;
 			--black-piano-key: #516d7a;
 			--use-color-formula: false;
@@ -3266,7 +3248,6 @@ var beepbox = (function (exports) {
 			--pitch-background: hsl(61deg 100% 70% / 25%);
 			--tonic: #66a3ff40;
 			--fifth-note: #ff666640;
-            --third-note: #f266ff40;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -3383,7 +3364,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #ffffff;
 			--tonic: #bbbbbb;
 			--fifth-note: #dcdcdc;
-            --third-note: #d6d6d6;
 			--white-piano-key: #ffffff;
 			--black-piano-key: #615f66;
 			--use-color-formula: false;
@@ -3501,7 +3481,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #393e4f40;
 			--tonic: #7D5C9EC0;
 			--fifth-note: #ab77bd50;
-            --third-note: #8f5bab70;
 			--white-piano-key: #EEEEEE;
 			--black-piano-key: #5F5566;
 			--use-color-formula: true;
@@ -3615,7 +3594,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #d0c7db;
 			--tonic: #bed3e4;
 			--fifth-note: #e7c6c6;
-            --third-note: #e373ff;
 			--white-piano-key: #cdcdcd;
 			--black-piano-key: #232323;
 			--use-color-formula: false;
@@ -3733,7 +3711,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #001410;
 			--tonic: #00241d;
 			--fifth-note: #ffff6633;
-            --third-note: #52275c44;
 			--white-piano-key: #66998f;
 			--black-piano-key: #141f1d;
 			--use-color-formula: false;
@@ -3850,7 +3827,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #1e1106;
 			--tonic: #382414;
 			--fifth-note: #41240c;
-            --third-note: #38291d;
 			--white-piano-key: #e1c5b7;
 			--black-piano-key: #482c1e;
 			--use-color-formula: false;
@@ -3967,7 +3943,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #1a1a1a;
 			--tonic: #262626;
 			--fifth-note: #0d0d0d;
-            --third-note: #1c1c1c;
 			--white-piano-key: #808080;
 			--black-piano-key: #232323;
 			--use-color-formula: true;
@@ -4080,7 +4055,6 @@ var beepbox = (function (exports) {
 			--pitch-background: #22272D;
 			--tonic: #1b3056;
 			--fifth-note: #344051;
-            --third-note: #192436;
 			--white-piano-key: #a6c6ed;
 			--black-piano-key: #2f4687;
 			--use-color-formula: false;
@@ -4197,7 +4171,6 @@ var beepbox = (function (exports) {
     ColorConfig.pitchBackground = "var(--pitch-background)";
     ColorConfig.tonic = "var(--tonic)";
     ColorConfig.fifthNote = "var(--fifth-note)";
-    ColorConfig.thirdNote = "var(--third-note)";
     ColorConfig.whitePianoKey = "var(--white-piano-key)";
     ColorConfig.blackPianoKey = "var(--black-piano-key)";
     ColorConfig.useColorFormula = "var(--use-color-formula)";
