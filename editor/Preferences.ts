@@ -1,5 +1,7 @@
 // Copyright (c) 2012-2022 John Nesky and contributing authors, distributed under the MIT license, see accompanying the LICENSE.md file.
 
+import { SongDocument } from "./SongDocument";
+
 export class Preferences {
 	public static readonly defaultVisibleOctaves: number = 3;
 	
@@ -8,6 +10,7 @@ export class Preferences {
 	public enableNotePreview: boolean;
 	public showFifth: boolean;
 	public showThird: boolean;
+	public showJustThird: boolean;
 	public notesOutsideScale: boolean;
 	public showLetters: boolean;
 	public showChannels: boolean;
@@ -42,6 +45,7 @@ export class Preferences {
 		this.enableNotePreview = window.localStorage.getItem("enableNotePreview") != "false";
 		this.showFifth = window.localStorage.getItem("showFifth") == "true";
 		this.showThird = window.localStorage.getItem("showThird") == "true";
+		this.showJustThird = window.localStorage.getItem("showJustThird") == "false";
 		this.notesOutsideScale = window.localStorage.getItem("notesOutsideScale") == "true";
 		this.showLetters = window.localStorage.getItem("showLetters") == "true";
 		this.showChannels = window.localStorage.getItem("showChannels") == "true";
@@ -73,6 +77,15 @@ export class Preferences {
 			if (window.localStorage.getItem("fullScreen") == "true") this.layout = "long";
 			window.localStorage.removeItem("fullScreen");
 		}
+		//let edo = doc.song.edo;
+		//let neu = Math.round((edo) * Math.log2(12/11)); // neutral second
+		//let bestFifth = Math.round(edo * Math.log2(3/2));
+		//if (((this.keyboardLayout == "pianoInCNeu")) && !(2 * neu == 2 * edo - 3 * bestFifth)) {
+		//	this.keyboardLayout = "pianoAtC";
+		//}
+		//if (((this.keyboardLayout == "pianoTransposingCNeu")) && !(2 * neu == 2 * edo - 3 * bestFifth)) {
+		//	this.keyboardLayout = "pianoTransposingC";
+		//}
 	}
 	
 	public save(): void {
@@ -81,6 +94,7 @@ export class Preferences {
 		window.localStorage.setItem("enableNotePreview", this.enableNotePreview ? "true" : "false");
 		window.localStorage.setItem("showFifth", this.showFifth ? "true" : "false");
 		window.localStorage.setItem("showThird", this.showThird ? "true" : "false");
+		window.localStorage.setItem("showJustThird", this.showJustThird ? "true" : "false");
 		window.localStorage.setItem("notesOutsideScale", this.notesOutsideScale ? "true" : "false");
 		window.localStorage.setItem("showLetters", this.showLetters ? "true" : "false");
 		window.localStorage.setItem("showChannels", this.showChannels ? "true" : "false");

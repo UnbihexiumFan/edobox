@@ -11,19 +11,33 @@ import {Piano} from "./Piano";
 
 const {button, label, div, p, a, h2, input, select, option} = HTML;
 
+let isNeutralScale = (2 * Math.round((doc.song.edo) * Math.log2(12/11)) == 2 * doc.song.edo - 3 * Math.round(doc.song.edo * Math.log2(3/2)))
 export class RecordingSetupPrompt implements Prompt {
 	private readonly _keyboardMode: HTMLSelectElement = select({style: "width: 100%;"},
 		option({value: "useCapsLockForNotes"}, "simple shortcuts, use caps lock to play notes"),
 		option({value: "pressControlForShortcuts"}, "simple notes, press " + EditorConfig.ctrlName + " for shortcuts"),
 	);
-	private readonly _keyboardLayout: HTMLSelectElement = select({style: "width: 100%;"},
-		option({value: "wickiHayden"}, "Wicki-Hayden"),
-		option({value: "songScale"}, "selected song scale"),
-		option({value: "pianoAtC"}, "piano starting at C :)"),
-		option({value: "pianoAtA"}, "piano starting at A :("),
-		option({value: "pianoTransposingC"}, "piano transposing C :) to song key"),
-		option({value: "pianoTransposingA"}, "piano transposing A :( to song key"),
+	private readonly _keyboardLayout: HTMLSelectElement = isNeutralScale?
+		select({style: "width: 100%;"}, 
+			option({value: "wickiHayden"}, "Wicki-Hayden"),
+			option({value: "songScale"}, "selected song scale"),
+			option({value: "pianoAtC"}, "piano starting at C :)"),
+			option({value: "pianoAtA"}, "piano starting at A :("),
+			option({value: "pianoInCNeu"}, "piano starting at C :/"),
+			option({value: "pianoTransposingC"}, "piano transposing C :) to song key"),
+			option({value: "pianoTransposingA"}, "piano transposing A :( to song key"),
+			option({value: "pianoTransposingCNeu"}, "piano transposing C :/ to song key"),
+	) : (
+		select({style: "width: 100%;"}, 
+			option({value: "wickiHayden"}, "Wicki-Hayden"),
+			option({value: "songScale"}, "selected song scale"),
+			option({value: "pianoAtC"}, "piano starting at C :)"),
+			option({value: "pianoAtA"}, "piano starting at A :("),
+			option({value: "pianoTransposingC"}, "piano transposing C :) to song key"),
+			option({value: "pianoTransposingA"}, "piano transposing A :( to song key"),
+		)
 	);
+
 	private readonly _bassOffset: HTMLSelectElement = select({style: "width: 100%;"},
 		option({value: "0"}, "disabled"),
 		option({value: "-1"}, "before"),

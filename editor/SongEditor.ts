@@ -420,6 +420,7 @@ export class SongEditor {
         option({ value: "showLetters" }, "Show Piano Keys"),
         option({ value: "showFifth" }, 'Highlight "Fifth" Note'),
         option({ value: "showThird" }, 'Highlight "Third" Note'),
+        option({ value: "showJustThird"}, 'Highlight "Just" Third Note')
         option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"),
         option({ value: "showChannels" }, "Show All Channels"),
         option({ value: "showScrollBar" }, "Show Octave Scroll Bar"),
@@ -1577,6 +1578,7 @@ export class SongEditor {
             (prefs.showLetters ? "✓ " : "　") + "Show Piano Keys",
             (prefs.showFifth ? "✓ " : "　") + 'Highlight "Fifth" Note',
             (prefs.showThird ? "✓ " : "　") + 'Highlight "Third" Note',
+            (prefs.showJustThird ? "✓ " : "　") + 'Highlight "Just" Third Note',
             (prefs.notesOutsideScale ? "✓ " : "　") + "Place Notes Out of Scale",
             (prefs.showChannels ? "✓ " : "　") + "Show All Channels",
             (prefs.showScrollBar ? "✓ " : "　") + "Show Octave Scroll Bar",
@@ -3156,6 +3158,7 @@ export class SongEditor {
                     this._doc.prefs.enableNotePreview = true;
                     this._doc.prefs.showFifth = true;
                     this._doc.prefs.showThird = true;
+                    this._doc.prefs.showJustThird = false;
                     this._doc.prefs.notesOutsideScale = false;
                     this._doc.prefs.showLetters = true;
                     this._doc.prefs.showChannels = true;
@@ -4113,6 +4116,9 @@ export class SongEditor {
                 break;
             case "showThird":
                 this._doc.prefs.showThird = !this._doc.prefs.showThird;
+                break;
+            case "showJustThird":
+                this._doc.prefs.showJustThird = !this._doc.prefs.showJustThird;
                 break;
             case "notesOutsideScale":
                 this._doc.prefs.notesOutsideScale = !this._doc.prefs.notesOutsideScale;

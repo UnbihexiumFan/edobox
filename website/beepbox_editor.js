@@ -7098,21 +7098,25 @@ li.select2-results__option[role=group] > strong:hover {
         }
         return newList;
     }
+
+    function mod (x, y) {
+        return ((x % y) + y) % y;
+    }
+
     function createMOS(edo, gen, modeNames, scaleArray, numGens, realScaleName) {
         for (let gensDown = 0; gensDown < numGens; gensDown++) {
             let thisFlags = Array(edo).fill(false);
-            thisFlags[0] = true;
+            thisFlags[0] = true; //safeguard
             let gensUp = numGens - gensDown - 1;
-            for (let i = 1; i <= gensUp; i++) {
-                thisFlags[(gen * i) % edo] = true;
-            }
-            for (let i = 1; i <= gensDown; i++) {
-                thisFlags[((edo - gen) * i) % edo] = true;
-            }
+            for (let i = -gensDown; i <= gensUp; i++) {
+                thisFlags[mod(gen * i, edo)] = true;
+            }   
+            //mod function used instead of % operator so the gensDown and gensUp don't have to be handled seperately
             scaleArray.push({ "index": scaleArray.length, "name": modeNames[gensDown], "realName": realScaleName + " " + gensUp + "|" + gensDown, "flags": thisFlags });
         }
         return scaleArray;
     }
+
     function createKeys(edo) {
         let bestFifth = Math.round(Math.log2(3 / 2) * edo);
         let fifthRatio = bestFifth / edo;
@@ -7202,7 +7206,7 @@ li.select2-results__option[role=group] > strong:hover {
         
         let bestGen = Math.round(Math.log2(3 / 2) * edo);
         let ratioGen = bestGen / edo;
-        if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) {
+        if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) { //diatonic
             realScaleName = "pentic";
             modeNames = ["Ionian", "Mixolydian", "Dorian", "Aeolian", "Phrygian"];
             modeNames = appendToListItems(modeNames, " Soft Pentatonic", false);
@@ -7213,6 +7217,58 @@ li.select2-results__option[role=group] > strong:hover {
                 scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
             }
         }
+        
+        let bestFifth = Math.round(Math.log2(3 / 2) * edo);
+        let bestThird = Math.round(Math.log2(5 / 4) * edo);     //major 3rd
+        let smallWhole = bestThird - 2 * bestFifth + edo;       //small whole tone (10/9)
+        // commas
+        let comma = bestFifth * 4 - bestThird - 2 * edo;        // syntonic comma / 5-comma (if this is 0, then you get meantone, which is just diatonic)
+        let mavilaChroma = bestFifth * 3 + bestThird - 2 * edo; // major chroma / mavila comma (if this is 0, then you get mavila (anti-diatonic) scales)
+        let augChroma = bestThird * 2 - bestFifth;              // chromatic semitone / augmented unison (if this is 0, you get neutral scales)
+        //'just-intonated' scales (includes pure major thirds if they aren't included by default)
+        if ((comma != 0) && (mavilaChroma != 0) && (augChroma != 0) && (edo >= 14)) { // Excludes EDOs like 8 or 11 where there's nothing to justly intonate
+            for (let i = 0; i < 2; i++) { 
+                // first go around is pentatonic (6), second go around is diatonic (8)
+                // there needs to be 8 notes (6 for pentatonic) in non-meantone EDOs because in C major, for example, 
+                // the root of the D(↓) minor chord and the fifth of the G major chord are two slightly different notes
+                // so both need to be included to not have one of them have a wolf fifth (40/27) and be out of tune
+                if (i == 0) {
+                    realScaleName = "ji pentic";
+                    modeNames = ["Ionian", "Mixolydian", "Major Dorian", "Dorian", "Aeolian", "Phrygian"]; 
+                    // there's a weird 'major' variant of dorian in JI where you don't get a good root chord (major, minor, or diminished) 
+                    // but you get other major chords some fourths away 
+                    modeNames = appendToListItems(modeNames, "Just ", true);
+                    modeNames = appendToListItems(modeNames, " Soft Pentatonic", false);
+                } else {
+                    realScaleName = "ji diatonic";
+                    modeNames = ["Lydian", "Ionian", "Mixolydian", "Major Dorian", "Dorian", "Aeolian", "Phrygian", "Locrian"];  
+                    modeNames = appendToListItems(modeNames, "Just ", true);
+                }
+                for (let thirdsDiff = 1; thirdsDiff >= -1; thirdsDiff -= 2) {
+                    // if you're going up by +1 major third (thirdsDiff = 1) from your perfect intervals to get to the rest, then it's major, 
+                    // but if you're going by -1 major third (thirdsDiff = -1; up by a minor 6th), then it's minor
+                    let thirdsUp = (thirdsDiff + 1) / 2; //-1 -> 0, 1 -> 1
+                    for (let fifthsDown = 0; fifthsDown <= 2 + i; fifthsDown++) {
+                        let thisFlags = Array(edo).fill(false);
+                        for (let j = -fifthsDown; j <= 2 + i - fifthsDown; j++) {
+                            thisFlags[mod((bestFifth * j), edo)] = true;
+                            thisFlags[mod((bestFifth * j + (smallWhole + bestFifth * i) * thirdsDiff), edo)] = true;
+                        }
+                        // the scale used is made of 2 chains of perfect fifths, one offset by minor 3rds from the other (or by minor 7ths for the pentatonic scales) 
+                        let downVal = 2 * fifthsDown + thirdsUp;
+                        let upVal = 5 + 2 * i - downVal;
+                        scaleArray.push({ "index": scaleArray.length, "name": modeNames[fifthsDown + (3+i) * (1-thirdsUp)], "realName": realScaleName + " " + upVal + "|" + downVal, "flags": thisFlags });
+                        // for the x|y naming of scales (when hovering over with the mouse), these scales don't work in the normal way the other scales do;
+                        // if you think about the scale as a big minor 15th chord that goes (starting from D) D - F^ - A - C^ - E - G^ - B - D^ (up arrows are commas),
+                        // then instead of a number of generators up/down, its the total number of major + minor thirds up/down
+                        // for the pentatonic scales, remove F^ and B and reorder it so you're going down a chord made of minor thirds and small (10/9) major seconds, 
+                        // so (still starting from D♮) D - C^ - A - G^ - E - D^
+                        // now the up and down 'flip', so the up and down numbers are the total amount of 2nds + 3rds down/up, respectively
+                    }                   
+                }
+            }
+        }
+    
         bestGen = Math.round(Math.log2(Math.cbrt(5 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen <= 4 / 9 && ratioGen > 3 / 7) {
@@ -7225,6 +7281,7 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = appendToListItems(modeNames, "Anti-", true);
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(14 / 9) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 3 && ratioGen >= 5 / 8) {
@@ -7239,6 +7296,7 @@ li.select2-results__option[role=group] > strong:hover {
                 scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 8, realScaleName);
             }
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(20 / 9)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 5 && ratioGen > 3 / 8) {
@@ -7250,6 +7308,7 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = ["Dylathian", "Illarnekian", "Celephaïsian", "Ultharian", "Mnarian", "Kadathian", "Hlanithian", "Sarnathian"];
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 8, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 1 / 3 && ratioGen > 2 / 7) {
@@ -7257,6 +7316,7 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = ["Dalmatian", "Galatian", "Cilician", "Bithynian", "Pisidian", "Illyrian", "Lycian"];
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(128 / 77) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 3 / 4 && ratioGen > 5 / 7) {
@@ -7265,6 +7325,7 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = appendToListItems(modeNames, "Anti-", true);
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(7 / 6) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen >= 2 / 9 && ratioGen < 1 / 4) {
@@ -7278,6 +7339,7 @@ li.select2-results__option[role=group] > strong:hover {
                 scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 9, realScaleName);
             }
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen > 7 / 9 && ratioGen < 4 / 5) {
@@ -7290,6 +7352,7 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = appendToListItems(modeNames, "Anti-", true);
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 9, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
         ratioGen = bestGen/edo;
         if (ratioGen > 1/6 && ratioGen < 1/5) {
@@ -7298,13 +7361,15 @@ li.select2-results__option[role=group] > strong:hover {
             modeNames = appendToListItems(modeNames, " Hexatonic", false);
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 6, realScaleName);
         }
-        bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
+
+        bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic (anti-onyx)
         ratioGen = bestGen/edo;
         if (ratioGen > 1/7 && ratioGen < 1/6) {
             realScaleName = "archaeotonic";
             modeNames = ["Ryonian", "Karakalian", "Lobonian", "Horthathian", "Oukranian", "Tamashian", "Zo-Kalarian"];
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
         ratioGen = bestGen/edo;
         if (ratioGen > 1/8 && ratioGen < 1/7) {
@@ -7314,15 +7379,18 @@ li.select2-results__option[role=group] > strong:hover {
             scaleArray = createMOS(edo, bestGen, modeNames, scaleArray, 7, realScaleName);
         }
 
-            return toNameMap(scaleArray);
-        }
+      return toNameMap(scaleArray);
+    }
+
     function createBreaks(edo) {
         let breaks = [1];
+        
         for (let i = 5; i <= 8; i++) { 
             if (edo % i == 0) { 
                 breaks[0]++
             }
         }
+
         let bestGen = Math.round(Math.log2(3 / 2) * edo);
         let ratioGen = bestGen / edo;
         if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) {
@@ -7331,12 +7399,24 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push(breaks[breaks.length - 1] + 7);
             }
         }
+
+        let bestFifth = Math.round(Math.log2(3 / 2) * edo);
+        let bestThird = Math.round(Math.log2(5 / 4) * edo);
+        let comma = bestFifth * 4 - bestThird - 2 * edo;  // syntonic comma
+        let chroma = bestFifth * 3 + bestThird - 2 * edo; // major chroma / mavila comma
+        let augChroma = bestThird * 2 - bestFifth;        // chromatic semitone (augmented unison)
+        if ((comma != 0) && (chroma != 0) && (augChroma != 0) && (edo >= 14)) {
+            breaks.push(breaks[breaks.length - 1] + 6);
+            breaks.push(breaks[breaks.length - 1] + 8);
+        }
+        
         bestGen = Math.round(Math.log2(Math.cbrt(5 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen <= 4 / 9 && ratioGen > 3 / 7) {
             breaks.push(breaks[breaks.length - 1] + 5);
             breaks.push(breaks[breaks.length - 1] + 7);
         }
+
         bestGen = Math.round(Math.log2(14 / 9) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 3 && ratioGen >= 5 / 8) {
@@ -7345,22 +7425,26 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push(breaks[breaks.length - 1] + 8);
             }
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(20 / 9)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 5 && ratioGen > 3 / 8) {
             breaks.push(breaks[breaks.length - 1] + 5);
             breaks.push(breaks[breaks.length - 1] + 8);
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 1 / 3 && ratioGen > 2 / 7) {
             breaks.push(breaks[breaks.length - 1] + 7);
         }
+
         bestGen = Math.round(Math.log2(128 / 77) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 3 / 4 && ratioGen > 5 / 7) {
             breaks.push(breaks[breaks.length - 1] + 7);
         }
+
         bestGen = Math.round(Math.log2(7 / 6) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen >= 2 / 9 && ratioGen < 1 / 4) {
@@ -7369,22 +7453,26 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push(breaks[breaks.length - 1] + 9);
             }
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen > 7 / 9 && ratioGen < 4 / 5) {
             breaks.push(breaks[breaks.length - 1] + 5);
             breaks.push(breaks[breaks.length - 1] + 9);
         }
-            bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
+
+        bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo); // machinoid
         ratioGen = bestGen/edo;
         if (ratioGen > 1/6 && ratioGen < 1/5) {
             breaks.push(breaks[breaks.length-1]+6);
         }
+
         bestGen = Math.round(Math.log2(10/9)*edo); // archaeotonic
         ratioGen = bestGen/edo;
         if (ratioGen > 1/7 && ratioGen < 1/6) {
             breaks.push(breaks[breaks.length-1]+7);
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo); // onyx
         ratioGen = bestGen/edo;
         if (ratioGen > 1/8 && ratioGen < 1/7) {
@@ -7393,8 +7481,10 @@ li.select2-results__option[role=group] > strong:hover {
 
         return breaks;
     }
+
     function createBreakNames(edo) {
         let breaks = ["aaa"];
+
         let bestGen = Math.round(Math.log2(3 / 2) * edo);
         let ratioGen = bestGen / edo;
         if (ratioGen >= 4 / 7 && ratioGen < 3 / 5) {
@@ -7403,12 +7493,24 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push("Diatonic");
             }
         }
+
+        let bestFifth = Math.round(Math.log2(3 / 2) * edo);
+        let bestThird = Math.round(Math.log2(5 / 4) * edo);
+        let comma = bestFifth * 4 - bestThird - 2 * edo;
+        let chroma = bestFifth * 3 + bestThird - 2 * edo;
+        let augChroma = bestThird * 2 - bestFifth;
+        if ((comma != 0) && (chroma != 0) && (augChroma != 0) && (edo >= 14)) {
+            breaks.push("Just-intonation pentatonic");
+            breaks.push("Just-intonation diatonic");
+        }
+        
         bestGen = Math.round(Math.log2(Math.cbrt(5 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen <= 4 / 9 && ratioGen > 3 / 7) {
             breaks.push("Antidiatonic-oid pentatonic");
             breaks.push("Antidiatonic");
         }
+
         bestGen = Math.round(Math.log2(14 / 9) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 3 && ratioGen >= 5 / 8) {
@@ -7417,22 +7519,26 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push("Checkertonic");
             }
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(20 / 9)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 2 / 5 && ratioGen > 3 / 8) {
             breaks.push("Oneirotonic-oid pentatonic");
             breaks.push("Oneirotonic");
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3 / 2)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 1 / 3 && ratioGen > 2 / 7) {
             breaks.push("Mohajira-ish");
         }
+
         bestGen = Math.round(Math.log2(128 / 77) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen < 3 / 4 && ratioGen > 5 / 7) {
             breaks.push("Smitonic");
         }
+
         bestGen = Math.round(Math.log2(7 / 6) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen >= 2 / 9 && ratioGen < 1 / 4) {
@@ -7441,27 +7547,32 @@ li.select2-results__option[role=group] > strong:hover {
                 breaks.push("Gramitonic");
             }
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(3)) * edo);
         ratioGen = bestGen / edo;
         if (ratioGen > 7 / 9 && ratioGen < 4 / 5) {
             breaks.push("Semiquartal-oid pentatonic");
             breaks.push("Semiquartal");
         }
+
         bestGen = Math.round(Math.log2(Math.sqrt(9/7))*edo);
         ratioGen = bestGen/edo;
         if (ratioGen > 1/6 && ratioGen < 1/5) {
             breaks.push("Machinoid");
         }
+
         bestGen = Math.round(Math.log2(10/9)*edo);
         ratioGen = bestGen/edo;
         if (ratioGen > 1/7 && ratioGen < 1/6) {
             breaks.push("Archaeotonic");
         }
+
         bestGen = Math.round(Math.log2(Math.cbrt(4/3))*edo);
         ratioGen = bestGen/edo;
         if (ratioGen > 1/8 && ratioGen < 1/7) {
             breaks.push("Onyx");
         }
+
         return breaks;
     }
 
@@ -24284,39 +24395,249 @@ You should be redirected to the song at:<br /><br />
 
     class KeyboardLayout {
         static keyPosToPitch(doc, x, y, keyboardLayout) {
+            this.doc = doc;
+            this.doc.prefs.fixKeyboardLayout(doc);
             let pitchOffset = null;
             let forcedKey = null;
+            let edo = doc.song.edo;
+            let fifth = Math.round(doc.song.edo * Math.log2(3/2));
+            if ((edo == 25) || (edo == 30)) { //25edo and 30edo's best fifths are 5edo fifths which make 5-step 'whole-tone' scales
+                fifth -= 1;                   //instead the second-best fifths are used, which creates mavila scales
+            }
+            let whole = 2 * fifth - edo; // whole step
+            let half = edo * 3 - fifth * 5; // diatonic half step (i.e. B-C, E-F)
+            let neu = Math.round(doc.song.edo * Math.log2(12/11)); //neutral 2nd (i.e. C - Dd (half flat))
+            let isTransposing = false;
+
             switch (keyboardLayout) {
                 case "wickiHayden":
                     pitchOffset = y * 5 + x * 2 - 2;
                     break;
+                
                 case "songScale":
                     const scaleFlags = createScales(doc.song.edo)[doc.song.scale].flags;
                     const scaleIndices = scaleFlags.map((flag, index) => flag ? index : null).filter((index) => index != null);
                     pitchOffset = (y - 1 + Math.floor(x / scaleIndices.length)) * doc.song.edo + scaleIndices[(x + scaleIndices.length) % scaleIndices.length];
                     break;
+                
+                case "pianoTransposingC":
+                    isTransposing = true;
+                
                 case "pianoAtC":
+                    if (edo < 9) {  //for small enough edos, sharps and flats (black keys) do not need to exist
+                        KeyboardLayout._pianoAtC = [
+                            [0,     1,       2,       3,       4,       5,       6,       7,       8,       9,       10        ],
+                            [edo,   edo+1,   edo+2,   edo+3,   edo+4,   edo+5,   edo+6,   edo+7,   edo+8,   edo+9,   edo+10,   edo+11    ],
+                            [2*edo, 2*edo+1, 2*edo+2, 2*edo+3, 2*edo+4, 2*edo+5, 2*edo+6, 2*edo+7, 2*edo+8, 2*edo+9, 2*edo+10, 2*edo+11, 2*edo+12],
+                            [3*edo, 3*edo+1, 3*edo+2, 3*edo+3, 3*edo+4, 3*edo+5, 3*edo+6, 3*edo+7, 3*edo+8, 3*edo+9, 3*edo+10, 3*edo+11, 3*edo+12],
+                        ];
+                    }
+                    else if (edo == 9) { //mavila without extra notes
+                        KeyboardLayout._pianoAtC = [
+                            [0,   1,    2,    4,    5,    6,    7,    9,    10,   11,   13    ],
+                            [-1,  null, null, 3,    null, null, null, 8,    null, null, 12,   null  ],
+                            [9,   10,   11,   13,   14,   15,   16,   18,   19,   20,   22,   23,   24  ],
+                            [8,   null, null, 12,   null, null, null, 17,   null, null, 21,   null, null],
+                        ];
+                    }
+                    else if (edo == 11) { //almost whole tone scale
+                        KeyboardLayout._pianoAtC = [
+                            [0,    2,    4,    6,    8,    10,   11,   13,   15,   17,   19    ],
+                            [null, 1,    3,    5,    7,    9,    null, 12,   14,   16,   18,   20    ],
+                            [11,   13,   15,   17,   19,   21,   22,   24,   26,   28,   30,   32,   33  ],
+                            [null, 12,   14,   16,   18,   20,   null, 23,   25,   27,   29,   31,   null],
+                        ];
+                    }
+                    else if (edo == 15) { //onyx scale
+                        KeyboardLayout._pianoAtC = [
+                            [0,    2,    null, 5,    7,    9,    11,   13,   15,   17,   null  ],
+                            [-1,   1,    3,    4,    6,    8,    10,   12,   14,   16,   18,   19    ],
+                            [15,   17,   null, 20,   22,   24,   26,   28,   30,   32,   null, 35,   37],
+                            [14,   16,   18,   19,   21,   23,   25,   27,   29,   31,   33,   34,   36],
+                        ];
+                    }
+                    else if (edo == 20) { //just-intonation scale, except the major thirds are sharper
+                        KeyboardLayout._pianoAtC = [
+                            [0,    3,    4,    7,    8,    12,   15,   19,   20,   23,   24,   ],
+                            [null, 2,    null, 5,    9,    10,   13,   17,   null, 22,   null, 25    ],
+                            [20,   23,   24,   27,   28,   32,   35,   39,   40,   43,   44,   47,   48],
+                            [null, 22,   null, 25,   29,   30,   33,   37,   null, 42,   null, 45,   49],
+                        ];
+                    }
+                    else if (fifth/edo == 4/7) { //the fifths are the same as 7edo
+                        KeyboardLayout._pianoAtC = [ //7edo but every note has a black key one step up from it
+                            [0,         whole,   2*whole,   3*whole,   4*whole,    5*whole,    6*whole,    edo,        8*whole,  9*whole,    10*whole    ],
+                            [1-whole,   1,       whole+1,   2*whole+1, 3*whole+1,  4*whole+1,  5*whole+1,  6*whole+1,  edo+1,    8*whole+1,  9*whole+1,  10*whole+1  ],
+                            [edo,       8*whole, 9*whole,   10*whole,  11*whole,   12*whole,   13*whole,   2*edo,      15*whole, 16*whole,   17*whole,   18*whole,   19*whole  ],
+                            [6*whole+1, edo+1,   8*whole+1, 9*whole+1, 10*whole+1, 11*whole+1, 12*whole+1, 13*whole+1, 2*edo+1,  15*whole+1, 16*whole+1, 17*whole+1, 18*whole+1],
+                        ];
+                    }
+
+                    else if (fifth/edo < 4/7) { // mavila edos (these have the whole and half steps reversed)
+                        KeyboardLayout._pianoAtC = [
+                            [0,         whole,     2*whole,     2*whole+half,     fifth,     fifth+whole,     fifth+2*whole,     edo,         edo+whole,   edo+2*whole,   edo+2*whole+half    ],
+                            [-whole,    null,      half,        whole+half,       null,      edo-3*whole,     edo-2*whole,       edo-whole,   null,        edo+half,      edo+whole+half,     null         ],
+                            [edo,       edo+whole, edo+2*whole, edo+2*whole+half, edo+fifth, edo+fifth+whole, edo+fifth+2*whole, 2*edo,       2*edo+whole, 2*edo+2*whole, 2*edo+2*whole+half, 2*edo+fifth, 2*edo+fifth+whole],
+                            [edo-whole, null,      edo+half,    edo+whole+half,   null,      2*edo-3*whole,   2*edo-2*whole,     2*edo-whole, null,        2*edo+half,    2*edo+whole+half,   null,        3*edo-3*whole    ],
+                        ];
+                    }
+                    else if (fifth/edo > 3/5) { //very sharp fifths
+                        half *= -1 //semitones are flipped, so unflip them
+                        whole -= half // the major second and minor third swap, so the whole tone is now the 'minor third'
+                        KeyboardLayout._pianoAtC = [ //this scale is technically a 'phrygian' scale (Illarnekian)
+                            [0,    whole,     2*whole,        2*whole+half,     3*whole+half,       fifth,     fifth+whole,     fifth+2*whole,     edo,   edo+whole,   edo+2*whole       ],
+                            [null, half,      whole+half,     null,             2*whole+2*half,     null,      edo-2*whole,     edo-whole,         null,  edo+half,    edo+whole+half,   null                ],
+                            [edo,  edo+whole, edo+2*whole,    edo+2*whole+half, edo+3*whole+half,   edo+fifth, edo+fifth+whole, edo+fifth+2*whole, 2*edo, 2*edo+whole, 2*edo+2*whole,    2*edo+2*whole+half, 2*edo+3*whole+half  ],
+                            [null, edo+half,  edo+whole+half, null,             edo+2*whole+2*half, null,      2*edo-2*whole,   2*edo-whole,       null,  2*edo+half,  2*edo+whole+half, null,               2*edo+2*whole+2*half],
+                        ];
+                    }
+                    else if ((edo > 35) || (edo % 5 != 0)) { //normal diatonic scale (excluding small multiples of 5 and 7, they have either no sharps or no semitones)
+                        KeyboardLayout._pianoAtC = [
+                            [0,    whole,     2*whole,         2*whole+half,     fifth,         fifth+whole,     fifth+2*whole,     edo,   edo+whole,   edo+2*whole,      edo+2*whole+half    ],
+                            [null, half,      whole+half,      null,             edo-3*whole,   edo-2*whole,     edo-whole,         null,  edo+half,    edo+whole+half,   null,               2*edo-3*whole       ],
+                            [edo,  edo+whole, edo+2*whole,     edo+2*whole+half, edo+fifth,     edo+fifth+whole, edo+fifth+2*whole, 2*edo, 2*edo+whole, 2*edo+2*whole,    2*edo+2*whole+half, 2*edo+fifth,        2*edo+fifth+whole],
+                            [null, edo+half,  edo+whole+half,  null,             2*edo-3*whole, 2*edo-2*whole,   2*edo-whole,       null,  2*edo+half,  2*edo+whole+half, null,               3*edo-3*whole,      3*edo-2*whole    ],
+                        ];
+                    }
                     pitchOffset = KeyboardLayout._pianoAtC[y][x];
                     forcedKey = createKeys(doc.song.edo).dictionary["C"].basePitch;
                     break;
-                case "pianoAtA":
-                    pitchOffset = KeyboardLayout._pianoAtA[y][x];
-                    forcedKey = createKeys(doc.song.edo).dictionary["A"].basePitch;
-                    break;
-                case "pianoTransposingC":
-                    pitchOffset = KeyboardLayout._pianoAtC[y][x];
-                    break;
+                
                 case "pianoTransposingA":
+                    forcedKey = createKeys(doc.song.edo).dictionary["C"].basePitch; //not an actual forced key, just a movable base key
+                    isTransposing = true;
+                
+                case "pianoAtA":
+                    if (edo < 9) {  //for small enough edos, sharps and flats (black keys) do not need to exist
+                        KeyboardLayout._pianoAtA = [
+                            [0,     1,       2,       3,       4,       5,       6,       7,       8,       9,       10        ],
+                            [edo,   edo+1,   edo+2,   edo+3,   edo+4,   edo+5,   edo+6,   edo+7,   edo+8,   edo+9,   edo+10,   edo+11    ],
+                            [2*edo, 2*edo+1, 2*edo+2, 2*edo+3, 2*edo+4, 2*edo+5, 2*edo+6, 2*edo+7, 2*edo+8, 2*edo+9, 2*edo+10, 2*edo+11, 2*edo+12],
+                            [3*edo, 3*edo+1, 3*edo+2, 3*edo+3, 3*edo+4, 3*edo+5, 3*edo+6, 3*edo+7, 3*edo+8, 3*edo+9, 3*edo+10, 3*edo+11, 3*edo+12],
+                        ];
+                    }
+                    else if (edo == 9) { //mavila without extra notes
+                        KeyboardLayout._pianoAtA = [
+                            [0,    2,    3,    4,    5,    7,    8,    9,    11,   12,   13    ],
+                            [null, 1,    null, null, null, 6,    null, null, 10,   null, null, null  ],
+                            [9,    11,   12,   13,   14,   16,   17,   18,   20,   21,   22,   23,   25],
+                            [null, 10,   null, null, null, 15,   null, null, 19,   null, null, null, 24],
+                        ];
+                    }
+                    else if (edo == 11) { //almost whole tone scale
+                        KeyboardLayout._pianoAtA = [
+                            [0,    2,    3,    5,    7,    9,    11,   13,   14,   16,   18    ],
+                            [-1,   1,    null, 4,    6,    8,    10,   12,   null, 15,   17,   19   ],
+                            [11,   13,   14,   16,   18,   20,   22,   24,   25,   27,   29,   31,  33],
+                            [10,   12,   null, 15,   17,   19,   21,   23,   null, 26,   28,   30,  32],
+                        ];
+                    }
+                    else if (edo == 15) { //onyx scale
+                        KeyboardLayout._pianoAtA = [
+                            [0,    2,    4,    6,    null, 9,    11,   13,   15,   17,   19    ],
+                            [-1,   1,    3,    5,    7,    8,    10,   12,   14,   16,   18,   20    ],
+                            [15,   17,   19,   21,   null, 24,   26,   28,   30,   32,   34,   36,   null],
+                            [14,   16,   18,   20,   22,   23,   25,   27,   29,   31,   33,   35,   37  ],
+                        ];
+                    }
+                    else if (edo == 20) { //just-intonation scale, except the major thirds are sharper
+                        KeyboardLayout._pianoAtA = [
+                            [0,    4,    5,    8,    9,    12,   13,   17,   20,   24,   25,   ],
+                            [-2,   2,    null, 7,    null, 10,   14,   15,   18,   22,   null, 27    ],
+                            [20,   24,   25,   28,   29,   32,   33,   37,   40,   44,   45,   48,   49  ],
+                            [18,   22,   null, 27,   null, 30,   34,   35,   38,   42,   null, 27,   null],
+                        ];
+                    }
+                    else if (fifth/edo == 4/7) { //the fifths are the same as 7edo
+                        KeyboardLayout._pianoAtA = [ //7edo but every note has a black key one step up from it
+                            [0,         whole,   2*whole,   3*whole,   4*whole,    5*whole,    6*whole,    edo,        8*whole,  9*whole,    10*whole    ],
+                            [1-whole,   1,       whole+1,   2*whole+1, 3*whole+1,  4*whole+1,  5*whole+1,  6*whole+1,  edo+1,    8*whole+1,  9*whole+1,  10*whole+1  ],
+                            [edo,       8*whole, 9*whole,   10*whole,  11*whole,   12*whole,   13*whole,   2*edo,      15*whole, 16*whole,   17*whole,   18*whole,   19*whole  ],
+                            [6*whole+1, edo+1,   8*whole+1, 9*whole+1, 10*whole+1, 11*whole+1, 12*whole+1, 13*whole+1, 2*edo+1,  15*whole+1, 16*whole+1, 17*whole+1, 18*whole+1],
+                        ];
+                    }
+
+                    else if (fifth/edo < 4/7) { // mavila edos (these have the whole and half steps reversed, so half > whole in the code)
+                        //this one is a different piano than the piano in C
+                        // because this one has all the white keys on white keys (anti-phrygian)
+                        // but the piano in C uses the 'anti-ionian' scale 
+                        // rather than the (equivalent to this) 'anti-mixolydian' scale
+                        KeyboardLayout._pianoAtA = [
+                            [0,    half,      whole+half,     2*whole+half,     fifth,     edo-2*whole,     edo-whole,         edo,   edo+half,    edo+whole+half,   edo+2*whole+half    ],
+                            [null, whole,     2*whole,        3*whole,          null,      fifth+whole,     fifth+2*whole,     null,  edo+whole,   edo+2*whole,      edo+3*whole,        null         ],
+                            [edo,  edo+half,  edo+whole+half, edo+2*whole+half, edo+fifth, 2*edo-2*whole,   2*edo-whole,       2*edo, 2*edo+half,  2*edo+whole+half, 2*edo+2*whole+half, 2*edo+fifth, 3*edo-2*whole    ],
+                            [null, edo+whole, edo+2*whole,    edo+3*whole,      null,      edo+fifth+whole, edo+fifth+2*whole, null,  2*edo+whole, 2*edo+2*whole,    2*edo+3*whole,      null,        2*edo+fifth+whole],
+                        ];
+                    }
+                    else if (fifth/edo > 3/5) { //very sharp fifths
+                        half *= -1 //half steps are flipped, so un-flip them
+                        whole -= half //technically these are minor thirds, but they're so flat they become major seconds
+                        KeyboardLayout._pianoAtA = [
+                            [0,    whole,     2*whole,        2*whole+half,     3*whole+half,       fifth,     fifth+whole,     fifth+2*whole,     edo,   edo+whole,   edo+2*whole       ],
+                            [null, half,      whole+half,     null,             2*whole+2*half,     null,      edo-2*whole,     edo-whole,         null,  edo+half,    edo+whole+half,   null                ],
+                            [edo,  edo+whole, edo+2*whole,    edo+2*whole+half, edo+3*whole+half,   edo+fifth, edo+fifth+whole, edo+fifth+2*whole, 2*edo, 2*edo+whole, 2*edo+2*whole,    2*edo+2*whole+half, 2*edo+3*whole+half  ],
+                            [null, edo+half,  edo+whole+half, null,             edo+2*whole+2*half, null,      2*edo-2*whole,   2*edo-whole,       null,  2*edo+half,  2*edo+whole+half, null,               2*edo+2*whole+2*half],
+                        ];
+                    }
+                    else if ((edo > 35) || (edo % 5 != 0)) { //normal diatonic scale (excluding small multiples of 5 and 7, they have either no sharps or no semitones)
+                        KeyboardLayout._pianoAtA = [
+                            [0,              whole,     whole+half,     2*whole+half,     fifth,         edo-2*whole,   edo-whole,          edo,              edo+whole,   edo+whole+half,   edo+2*whole+half    ],
+                            [half-whole,     half,      null,           whole+2*half,     edo-3*whole,   null,          edo-2*whole+half,   edo-whole+half,   edo+half,    null,             edo+whole+2*half,   2*edo-3*whole  ],
+                            [edo,            edo+whole, edo+whole+half, edo+2*whole+half, edo+fifth,     2*edo-2*whole, 2*edo-whole,        2*edo,            2*edo+whole, 2*edo+whole+half, 2*edo+2*whole+half, 2*edo+fifth,   3*edo-2*whole],
+                            [edo-whole+half, edo+half,  null,           edo+whole+2*half, 2*edo-3*whole, null,          2*edo-2*whole+half, 2*edo-whole+half, 2*edo+half,  null,             2*edo+whole+2*half, 3*edo-3*whole, null         ],
+                        ];
+                    }
                     pitchOffset = KeyboardLayout._pianoAtA[y][x];
+                    if (!isTransposing) {
+                        if ((edo == 15) || (edo == 20)) {
+                            forcedKey = createKeys(doc.song.edo).dictionary["A-"].basePitch;
+                        }
+                        else {
+                            forcedKey = createKeys(doc.song.edo).dictionary["A"].basePitch;
+                        }
+                    }
+                    break;
+                
+                case "pianoTransposingCNeu":
+                    isTransposing = true;
+                
+                case "pianoInCNeu": //neutral scale
+                    if (edo == 30) //30edo was adjusted down by 1 step so this changes it back
+                        fifth += 1;                                               
+                    whole = 2 * fifth - edo;
+                    if (fifth / edo == 3/5) { //for 10edo (and some multiples), the neutral piano only has 10 distinct notes per octave (10edo chromatic), so this removes the extra notes.
+                        KeyboardLayout._pianoInCNeu = [
+                            [0,    whole,     whole+neu,     whole+2*neu,     fifth,           fifth+neu,     edo-neu,     edo,   edo+whole,   edo+whole+neu,   edo+whole+2*neu    ],
+                            [null, neu,       null,          null,            whole+3*neu,     null,          edo-whole,   null,  edo+neu,     null,            null,              edo+whole+3*neu    ],
+                            [edo,  edo+whole, edo+whole+neu, edo+whole+2*neu, edo+fifth,       edo+fifth+neu, 2*edo-neu,   2*edo, 2*edo+whole, 2*edo+whole+neu, 2*edo+whole+2*neu, 2*edo+fifth,       2*edo+fifth+neu],
+                            [null, edo+neu,   null,          null,            edo+whole+3*neu, null,          2*edo-whole, null,  2*edo+neu,   null,            null,              2*edo+whole+3*neu, null           ],
+                        ];
+                    } else if (fifth / edo != 4/7) { //if the fifth is the same as in 7edo, then it just creates 7edo chromatic
+                        KeyboardLayout._pianoInCNeu = [
+                            [0,             whole,     whole+neu,     whole+2*neu,     fifth,           fifth+neu,     edo-neu,     edo,                edo+whole,       edo+whole+neu,   edo+whole+2*neu    ],
+                            [neu-whole,     neu,       2*neu,         null,            whole+3*neu,     null,          edo-whole,   edo+neu-whole,      edo+neu,         edo+2*neu,       null,              edo+whole+3*neu    ],
+                            [edo,           edo+whole, edo+whole+neu, edo+whole+2*neu, edo+fifth,       edo+fifth+neu, 2*edo-neu,   2*edo,              2*edo+whole,     2*edo+whole+neu, 2*edo+whole+2*neu, 2*edo+fifth,       2*edo+fifth+neu],
+                            [edo+neu-whole, edo+neu,   edo+2*neu,     null,            edo+whole+3*neu, null,          2*edo-whole, 2*edo+neu-whole,    2*edo+neu,       2*edo+2*neu,     null,              2*edo+whole+3*neu, null           ],
+                        ];
+                    }
+                    pitchOffset = KeyboardLayout._pianoInCNeu[y][x];
+                    forcedKey = createKeys(doc.song.edo).dictionary["C"].basePitch;
                     break;
             }
+
             if (pitchOffset == null)
                 return null;
+
             const octaveOffset = Math.max(0, doc.song.channels[doc.channel].octave - 1) * doc.song.edo;
             let keyOffset = 0;
+
             if (forcedKey != null) {
                 const keyBasePitch = createKeys(doc.song.edo)[doc.song.key].basePitch;
-                keyOffset = (forcedKey - keyBasePitch + 144) % doc.song.edo;
+                if (isTransposing) {
+                    keyOffset = forcedKey - doc.song.edo;
+                } else {
+                    keyOffset = forcedKey - keyBasePitch;
+                }
             }
             const pitch = octaveOffset + keyOffset + pitchOffset;
             if (pitch < 0 || pitch > doc.song.edo * Config.pitchOctaves)
@@ -24526,18 +24847,6 @@ You should be redirected to the song at:<br /><br />
             }
         }
     }
-    KeyboardLayout._pianoAtC = [
-        [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17],
-        [null, 1, 3, null, 6, 8, 10, null, 13, 15, null, 18],
-        [12, 14, 16, 17, 19, 21, 23, 24, 26, 28, 29, 31, 33],
-        [null, 13, 15, null, 18, 20, 22, null, 25, 27, null, 30, 32],
-    ];
-    KeyboardLayout._pianoAtA = [
-        [0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17],
-        [-1, 1, null, 4, 6, null, 9, 11, 13, null, 16, 18],
-        [12, 14, 15, 17, 19, 20, 22, 24, 26, 27, 29, 31, 32],
-        [11, 13, null, 16, 18, null, 21, 23, 25, null, 28, 30, null],
-    ];
 
     function makeEmptyReplacementElement(node) {
         const clone = node.cloneNode(false);
@@ -24624,7 +24933,7 @@ You should be redirected to the song at:<br /><br />
             this._renderedBeatWidth = -1;
             this._renderedPitchHeight = -1;
             this._renderedFifths = false;
-            this._renderedThirds = false;
+            this._renderedThirds = [false, false];
             this._renderedDrums = false;
             this._renderedMod = false;
             this._renderedRhythm = -1;
@@ -26594,10 +26903,12 @@ You should be redirected to the song at:<br /><br />
                 this._renderedFifths = this._doc.prefs.showFifth;
                 this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(3 / 2))].setAttribute("fill", this._doc.prefs.showFifth ? ColorConfig.fifthNote : ColorConfig.pitchBackground);
             }
-            if (this._renderedThirds != this._doc.prefs.showThird) {
-                this._renderedThirds = this._doc.prefs.showThird;
-                this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(5 / 4))].setAttribute("fill", this._doc.prefs.showThird ? ColorConfig.thirdNote : ColorConfig.pitchBackground);
-            }
+            if ((this._renderedThirds[0] != this._doc.prefs.showJustThird) || (this._renderedThirds[1] != this._doc.prefs.showThird)) {
+                this._renderedThirds = [this._doc.prefs.showJustThird, this._doc.prefs.showThird]; // Just major 3rd is 5/4, 'normal' (diatonic) third is 81/64 (stack of 4 fifths minus 2 octaves)
+                this._backgroundPitchRows[Math.round(this._doc.song.edo * Math.log2(5 / 4))].setAttribute("fill", this._doc.prefs.showJustThird ? ColorConfig.thirdNote : ColorConfig.pitchBackground);
+                //highlights 'just' (5/4) major third
+                this._backgroundPitchRows[4 * Math.round(this._doc.song.edo * Math.log2(3 / 2)) - 2 * this._doc.song.edo].setAttribute("fill", (this._doc.prefs.showThird && !this._doc.prefs.showJustThird) ? ColorConfig.thirdNote : ColorConfig.pitchBackground);
+            }   //highlights diatonic (81/64) major third
             for (let j = 0; j < this._doc.song.edo; j++) {
                 this._backgroundPitchRows[j].style.visibility = createScales(this._doc.song.edo)[this._doc.song.scale].flags[j] ? "visible" : "hidden";
             }
@@ -27539,7 +27850,93 @@ You should be redirected to the song at:<br /><br />
         constructor(_doc) {
             this._doc = _doc;
             this._keyboardMode = select$2({ style: "width: 100%;" }, option$2({ value: "useCapsLockForNotes" }, "simple shortcuts, use caps lock to play notes"), option$2({ value: "pressControlForShortcuts" }, "simple notes, press " + EditorConfig.ctrlName + " for shortcuts"));
-            this._keyboardLayout = select$2({ style: "width: 100%;" }, option$2({ value: "wickiHayden" }, "Wicki-Hayden"), option$2({ value: "songScale" }, "selected song scale"), option$2({ value: "pianoAtC" }, "piano starting at C :)"), option$2({ value: "pianoAtA" }, "piano starting at A :("), option$2({ value: "pianoTransposingC" }, "piano transposing C :) to song key"), option$2({ value: "pianoTransposingA" }, "piano transposing A :( to song key"));
+            let edo = _doc.song.edo;
+            let neu = Math.round(edo * Math.log2(12/11)); // neutral second
+            if (edo == 20)
+                neu -= 1;
+            let bestFifth = Math.round(edo * Math.log2(3/2));
+            let layoutNum = 0;
+            //Only works if two neutral seconds add up to a minor third from the circle of fifths(tempers out 243/242)
+            if (2 * neu == 2 * edo - 3 * bestFifth) {
+                if (edo == 10) { //10edo has no major or minor scales, only neutral
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoInCNeu" }, "piano starting at C :/"),
+                        option$2({ value: "pianoTransposingCNeu" }, "piano transposing C :/ to song key"),
+                    );
+                    layoutNum = 3;
+                } else if (bestFifth / edo == 4/7) {
+                    //for multiples of 7 (minus the larger ones), the major and minor scales collapse into 7edo chromatic
+                    //so there's no need to transpose for both of them
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C"),
+                        option$2({ value: "pianoAtA" }, "piano starting at A"),
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C to song key"),
+                    );
+                    layoutNum = 2;
+                } else if (bestFifth / edo < 4/7) { //mavila edos have minor and major flipped
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C :("), 
+                        option$2({ value: "pianoAtA" }, "piano starting at A :)"), 
+                        option$2({ value: "pianoInCNeu" }, "piano starting at C :/"),
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C :( to song key"), 
+                        option$2({ value: "pianoTransposingA" }, "piano transposing A :) to song key"), 
+                        option$2({ value: "pianoTransposingCNeu" }, "piano transposing C :/ to song key"),
+                    );
+                    layoutNum = 0;
+                } else {
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C :)"), 
+                        option$2({ value: "pianoAtA" }, "piano starting at A :("), 
+                        option$2({ value: "pianoInCNeu" }, "piano starting at C :/"),
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C :) to song key"), 
+                        option$2({ value: "pianoTransposingA" }, "piano transposing A :( to song key"), 
+                        option$2({ value: "pianoTransposingCNeu" }, "piano transposing C :/ to song key"),
+                    );
+                    layoutNum = 0;
+                }
+            } else {
+                if ((bestFifth / edo == 4/7) || (edo <= 9) || (edo == 11)) {
+                    //most edos less than 12 (other than 7) dont have major and minor, so there's no point transposing major AND minor keys
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C"),
+                        option$2({ value: "pianoAtA" }, "piano starting at A"),
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C to song key"),
+                    );
+                    layoutNum = 2;
+                }
+                else if (bestFifth / edo < 4/7) {
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C :("), 
+                        option$2({ value: "pianoAtA" }, "piano starting at A :)"), 
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C :( to song key"), 
+                        option$2({ value: "pianoTransposingA" }, "piano transposing A :) to song key"),
+                    );
+                    layoutNum = 1;
+                } else {
+                    this._keyboardLayout = select$2({ style: "width: 100%;" }, 
+                        option$2({ value: "wickiHayden" }, "Wicki-Hayden"), 
+                        option$2({ value: "songScale" }, "selected song scale"), 
+                        option$2({ value: "pianoAtC" }, "piano starting at C :)"), 
+                        option$2({ value: "pianoAtA" }, "piano starting at A :("), 
+                        option$2({ value: "pianoTransposingC" }, "piano transposing C :) to song key"), 
+                        option$2({ value: "pianoTransposingA" }, "piano transposing A :( to song key"),
+                    );
+                    layoutNum = 1;
+                }
+            }
+
             this._bassOffset = select$2({ style: "width: 100%;" }, option$2({ value: "0" }, "disabled"), option$2({ value: "-1" }, "before"), option$2({ value: "1" }, "after"));
             this._recordingOffset = input$1({style: "width: 2em; margin-left: 1em", type: "number", step: "1"});
             this._keyboardLayoutPreview = div$3({ style: "display: grid; row-gap: 4px; margin: 4px auto; font-size: 10px;" });
@@ -27551,7 +27948,70 @@ You should be redirected to the song at:<br /><br />
             this._metronomeWhileRecording = input$1({ style: "width: 2em; margin-left: 1em;", type: "checkbox" });
             this._okayButton = button$3({ class: "okayButton", style: "width:45%;" }, "Okay");
             this._cancelButton = button$3({ class: "cancelButton" });
-            this.container = div$3({ class: "prompt noSelection recordingSetupPrompt", style: "width: 600px; text-align: right; max-height: 90%;" }, h2$2({ style: "align-self: center;" }, "Note Recording Setup"), div$3({ style: "display: grid; overflow-y: auto; overflow-x: hidden; flex-shrink: 1;" }, p$1("JummBox can record notes as you perform them. You can start recording by pressing Ctrl+Space (or " + EditorConfig.ctrlSymbol + "P)."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Add ● record button next to ▶ play button:", this._showRecordButton), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Snap recorded notes to the song's rhythm:", this._snapRecordedNotesToRhythm), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Ignore notes not in the song's scale:", this._ignorePerformedNotesNotInScale), p$1("While recording, you can perform notes on your keyboard!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Keyboard layout:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._keyboardLayout)), this._keyboardLayoutPreview, p$1("When not recording, you can use the computer keyboard either for shortcuts (like C and V for copy and paste) or for performing notes, depending on this mode:"), label({ style: "display: flex; margin-top: 0.5em; margin-bottom: 0.5em; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, div$3({ class: "selectContainer", style: "width: 50%;" }, this._keyboardMode)), p$1("Performing music takes practice! Try slowing the tempo and using this metronome to help you keep a rhythm."), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Hear metronome while recording:", this._metronomeWhileRecording), label({ style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, "Count-in 1 bar of metronome before recording:", this._metronomeCountIn), p$1("If you have a ", a({ href: "https://caniuse.com/midi", target: "_blank" }, "compatible browser"), " on a device connected to a MIDI keyboard, you can use it to perform notes in JummBox! (Or you could buy ", a({ href: "https://imitone.com/", target: "_blank" }, "Imitone"), " or ", a({ href: "https://vochlea.com/", target: "_blank" }, "Dubler"), " to hum notes into a microphone while wearing headphones!)"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; height: 2em; justify-content: center;" }, "Enable MIDI performance:", this._enableMidi), p$1("The range of pitches available to play via your computer keyboard is affected by the octave scrollbar of the currently selected channel."), p$1("When using a MIDI keyboard for large EDOs, you'll often be restricted by default to a very low range of notes. Changing the setting below allows you to offset all MIDI keyboards by a certain number of octaves, so you can play those high notes."), label({style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;"}, "Octave Offset:", div({class: "inline-block; text-align: left"}, this._recordingOffset)), p$1("If you set the channel offset below to 'before' or 'after', notes below the middle octave in the view will be 'bass' notes, and placed in the channel before or after the viewed one. Using this, you can play bass and lead at the same time!"), label({ style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" }, "Bass Offset:", div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._bassOffset)), p$1("Once you enable the setting, the keyboard layout above will darken to denote the new bass notes. The notes will be recorded with independent timing and this works with MIDI devices, too. Be aware that the octave offset of both used channels will impact how high/low the bass/lead are relative to one another."), p$1("Recorded notes often overlap such that one note ends after the next note already started. In JummBox, these notes get split into multiple notes which may sound different when re-played than they did when you were recording. To fix the sound, you can either manually clean up the notes in the pattern editor, or you could try enabling the \"transition type\" effect on the instrument and setting it to \"continue\"."), div$3({ style: `width: 100%; height: 80px; background: linear-gradient(rgba(0,0,0,0), ${ColorConfig.editorBackground}); position: sticky; bottom: 0; pointer-events: none;` })), div$3({ style: "display: flex; flex-direction: row-reverse; justify-content: space-between;" }, this._okayButton), this._cancelButton);
+            this.container = div$3 ( { class: "prompt noSelection recordingSetupPrompt", style: "width: 600px; text-align: right; max-height: 90%;" }, 
+                h2$2({ style: "align-self: center;" }, "Note Recording Setup"), 
+                div$3(
+                    { style: "display: grid; overflow-y: auto; overflow-x: hidden; flex-shrink: 1;" }, 
+                    p$1("JummBox can record notes as you perform them. You can start recording by pressing Ctrl+Space (or " + EditorConfig.ctrlSymbol + "P)."), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, 
+                        "Add ● record button next to ▶ play button:", this._showRecordButton,
+                    ), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" },
+                        "Snap recorded notes to the song's rhythm:", this._snapRecordedNotesToRhythm,
+                    ), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" },
+                        "Ignore notes not in the song's scale:", this._ignorePerformedNotesNotInScale,
+                    ), 
+                    p$1("While recording, you can perform notes on your keyboard!"), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" },
+                        "Keyboard layout:", 
+                        div$3( { class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._keyboardLayout),
+                    ), 
+                    this._keyboardLayoutPreview,
+                    p$1("When not recording, you can use the computer keyboard either for shortcuts (like C and V for copy and paste) or for performing notes, depending on this mode:"), 
+                    label(
+                        { style: "display: flex; margin-top: 0.5em; margin-bottom: 0.5em; flex-direction: row; align-items: center; height: 2em; justify-content: center;" },
+                        div$3({ class: "selectContainer", style: "width: 50%;" }, this._keyboardMode),
+                    ), 
+                    p$1("Performing music takes practice! Try slowing the tempo and using this metronome to help you keep a rhythm."), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" }, 
+                        "Hear metronome while recording:", this._metronomeWhileRecording,
+                    ), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; height: 2em; justify-content: center;" },
+                        "Count-in 1 bar of metronome before recording:", this._metronomeCountIn,
+                    ), 
+                    p$1("If you have a ", a({ href: "https://caniuse.com/midi", target: "_blank" }, "compatible browser"), " on a device connected to a MIDI keyboard, you can use it to perform notes in JummBox! (Or you could buy ", a({ href: "https://imitone.com/", target: "_blank" }, "Imitone"), " or ", a({ href: "https://vochlea.com/", target: "_blank" }, "Dubler"), " to hum notes into a microphone while wearing headphones!)"), 
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; height: 2em; justify-content: center;" },
+                        "Enable MIDI performance:", this._enableMidi,
+                    ),
+                    p$1("The range of pitches available to play via your computer keyboard is affected by the octave scrollbar of the currently selected channel."), 
+                    p$1("When using a MIDI keyboard for large EDOs, you'll often be restricted by default to a very low range of notes. Changing the setting below allows you to offset all MIDI keyboards by a certain number of octaves, so you can play those high notes."),
+                    label(
+                        {style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;"},
+                        "Octave Offset:", 
+                        div({class: "inline-block; text-align: left"}, this._recordingOffset),
+                    ),
+                    p$1("If you set the channel offset below to 'before' or 'after', notes below the middle octave in the view will be 'bass' notes, and placed in the channel before or after the viewed one. Using this, you can play bass and lead at the same time!"),
+                    label(
+                        { style: "display: flex; flex-direction: row; align-items: center; margin-top: 0.5em; margin-bottom: 0.5em; height: 2em; justify-content: center;" },
+                        "Bass Offset:",
+                        div$3({ class: "selectContainer", style: "width: 50%; margin-left: 1em;" }, this._bassOffset),
+                    ), 
+                    p$1("Once you enable the setting, the keyboard layout above will darken to denote the new bass notes. The notes will be recorded with independent timing and this works with MIDI devices, too. Be aware that the octave offset of both used channels will impact how high/low the bass/lead are relative to one another."),
+                    p$1("Recorded notes often overlap such that one note ends after the next note already started. In JummBox, these notes get split into multiple notes which may sound different when re-played than they did when you were recording. To fix the sound, you can either manually clean up the notes in the pattern editor, or you could try enabling the \"transition type\" effect on the instrument and setting it to \"continue\"."), 
+                    div$3({ style: `width: 100%; height: 80px; background: linear-gradient(rgba(0,0,0,0), ${ColorConfig.editorBackground}); position: sticky; bottom: 0; pointer-events: none;` })
+                ), 
+                div$3({ style: "display: flex; flex-direction: row-reverse; justify-content: space-between;" }, this._okayButton), 
+                this._cancelButton,
+            );
+
             this._close = () => {
                 this._doc.undo();
             };
@@ -27603,6 +28063,12 @@ You should be redirected to the song at:<br /><br />
                                 else if (scalePitch == Math.round(this._doc.song.edo * Math.log2(3 / 2)) && this._doc.prefs.showFifth) {
                                     key.style.background = ColorConfig.fifthNote;
                                 }
+                                else if ((scalePitch == 4 * Math.round(this._doc.song.edo * Math.log2(3 / 2)) - 2) && this._doc.prefs.showThird && !this._doc.prefs.showJustThird) {
+                                    key.style.background = ColorConfig.thirdNote;
+                                } //diatonic major third
+                                else if ((scalePitch == Math.round(this._doc.song.edo * Math.log2(5 / 4))) && this._doc.prefs.showJustThird) {
+                                    key.style.background = ColorConfig.thirdNote;
+                                } //'just' major third
                                 else {
                                     key.style.background = ColorConfig.pitchBackground;
                                 }
@@ -28816,9 +29282,83 @@ You should be redirected to the song at:<br /><br />
             this._defs = SVG.defs({}, this._gradient);
             this._volumeBarContainer = SVG.svg({ style: `touch-action: none; overflow: visible; margin: auto; max-width: 20vw;`, width: "160px", height: "100%", preserveAspectRatio: "none", viewBox: "0 0 160 12" }, this._defs, this._outVolumeBarBg, this._outVolumeBar, this._outVolumeCap);
             this._volumeBarBox = div({ class: "playback-volume-bar", style: "height: 12px; align-self: center;" }, this._volumeBarContainer);
-            this._fileMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "File"), option({ value: "new" }, "+ New Blank Song"), option({ value: "import" }, "↑ Import Song... (" + EditorConfig.ctrlSymbol + "O)"), option({ value: "export" }, "↓ Export Song... (" + EditorConfig.ctrlSymbol + "S)"), option({ value: "copyUrl" }, "⎘ Copy Song URL"), option({ value: "shareUrl" }, "⤳ Share Song URL"), option({ value: "shortenUrl" }, "… Shorten Song URL"), option({ value: "viewPlayer" }, "▶ View in Song Player"), option({ value: "copyEmbed" }, "⎘ Copy HTML Embed Code"), option({ value: "songRecovery" }, "⚠ Recover Recent Song..."));
-            this._editMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "Edit"), option({ value: "undo" }, "Undo (Z)"), option({ value: "redo" }, "Redo (Y)"), option({ value: "copy" }, "Copy Pattern (C)"), option({ value: "pasteNotes" }, "Paste Pattern Notes (V)"), option({ value: "pasteNumbers" }, "Paste Pattern Numbers (" + EditorConfig.ctrlSymbol + "⇧V)"), option({ value: "insertBars" }, "Insert Bar (⏎)"), option({ value: "deleteBars" }, "Delete Selected Bars (⌫)"), option({ value: "insertChannel" }, "Insert Channel (" + EditorConfig.ctrlSymbol + "⏎)"), option({ value: "deleteChannel" }, "Delete Selected Channels (" + EditorConfig.ctrlSymbol + "⌫)"), option({ value: "selectChannel" }, "Select Channel (⇧A)"), option({ value: "selectAll" }, "Select All (A)"), option({ value: "duplicatePatterns" }, "Duplicate Reused Patterns (D)"), option({ value: "transposeUp" }, "Move Notes Up (+ or ⇧+)"), option({ value: "transposeDown" }, "Move Notes Down (- or ⇧-)"), option({ value: "moveNotesSideways" }, "Move All Notes Sideways... (W)"), option({ value: "beatsPerBar" }, "Change Beats Per Bar..."), option({ value: "barCount" }, "Change Song Length... (L)"), option({ value: "edo" }, "Change EDO..."), option({ value: "channelSettings" }, "Channel Settings... (Q)"), option({ value: "limiterSettings" }, "Limiter Settings... (⇧L)"));
-            this._optionsMenu = select({ style: "width: 100%;" }, option({ selected: true, disabled: true, hidden: false }, "Preferences"), option({ value: "autoPlay" }, "Auto Play on Load"), option({ value: "autoFollow" }, "Auto Follow Playhead"), option({ value: "enableNotePreview" }, "Hear Added Notes"), option({ value: "showLetters" }, "Show Piano Keys"), option({ value: "showFifth" }, 'Highlight "Fifth" Note'), option({ value: "showThird" }, 'Highlight "Third" Note'), option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"), option({ value: "showChannels" }, "Show All Channels"), option({ value: "showScrollBar" }, "Show Octave Scroll Bar"), option({ value: "alwaysFineNoteVol" }, "Always Fine Note Volume"), option({ value: "enableChannelMuting" }, "Enable Channel Muting"), option({ value: "displayBrowserUrl" }, "Show Song Data in URL"), option({ value: "displayVolumeBar" }, "Show Playback Volume"), option({ value: "layout" }, "Set Layout..."), option({ value: "colorTheme" }, "Set Theme..."), option({ value: "recordingSetup" }, "Note Recording..."));
+            this._fileMenu = select({ style: "width: 100%;" }, 
+                option({ selected: true, disabled: true, hidden: false }, "File"), 
+                option({ value: "new" }, "+ New Blank Song"), 
+                option({ value: "import" }, "↑ Import Song... (" + EditorConfig.ctrlSymbol + "O)"), 
+                option({ value: "export" }, "↓ Export Song... (" + EditorConfig.ctrlSymbol + "S)"), 
+                option({ value: "copyUrl" }, "⎘ Copy Song URL"), 
+                option({ value: "shareUrl" }, "⤳ Share Song URL"), 
+                option({ value: "shortenUrl" }, "… Shorten Song URL"), 
+                option({ value: "viewPlayer" }, "▶ View in Song Player"), 
+                option({ value: "copyEmbed" }, "⎘ Copy HTML Embed Code"), 
+                option({ value: "songRecovery" }, "⚠ Recover Recent Song..."),
+            );
+            this._editMenu = select({ style: "width: 100%;" }, 
+                option({ selected: true, disabled: true, hidden: false }, "Edit"), 
+                option({ value: "undo" }, "Undo (Z)"), 
+                option({ value: "redo" }, "Redo (Y)"), 
+                option({ value: "copy" }, "Copy Pattern (C)"), 
+                option({ value: "pasteNotes" }, "Paste Pattern Notes (V)"), 
+                option({ value: "pasteNumbers" }, "Paste Pattern Numbers (" + EditorConfig.ctrlSymbol + "⇧V)"), 
+                option({ value: "insertBars" }, "Insert Bar (⏎)"), 
+                option({ value: "deleteBars" }, "Delete Selected Bars (⌫)"), 
+                option({ value: "insertChannel" }, "Insert Channel (" + EditorConfig.ctrlSymbol + "⏎)"), 
+                option({ value: "deleteChannel" }, "Delete Selected Channels (" + EditorConfig.ctrlSymbol + "⌫)"), 
+                option({ value: "selectChannel" }, "Select Channel (⇧A)"), 
+                option({ value: "selectAll" }, "Select All (A)"), 
+                option({ value: "duplicatePatterns" }, "Duplicate Reused Patterns (D)"), 
+                option({ value: "transposeUp" }, "Move Notes Up (+ or ⇧+)"), 
+                option({ value: "transposeDown" }, "Move Notes Down (- or ⇧-)"), 
+                option({ value: "moveNotesSideways" }, "Move All Notes Sideways... (W)"), 
+                option({ value: "beatsPerBar" }, "Change Beats Per Bar..."), 
+                option({ value: "barCount" }, "Change Song Length... (L)"), 
+                option({ value: "edo" }, "Change EDO..."), 
+                option({ value: "channelSettings" }, "Channel Settings... (Q)"), 
+                option({ value: "limiterSettings" }, "Limiter Settings... (⇧L)"),
+            );
+            this._optionsMenu = ((Math.round(_doc.song.edo * Math.log2(5)) == 4 * Math.round(_doc.song.edo * Math.log2(3 / 2))) ? // is 5-comma tempered out? (4 perfect fifths = 'just' major 3rd + 2 octaves)
+            // 'Highlight "Just" Third Note' is only needed if the 5-comma is not tempered out (otherwise both options for the major third are the exact same)
+                select({ style: "width: 100%;" }, 
+                    option({ selected: true, disabled: true, hidden: false }, "Preferences"), 
+                    option({ value: "autoPlay" }, "Auto Play on Load"), 
+                    option({ value: "autoFollow" }, "Auto Follow Playhead"), 
+                    option({ value: "enableNotePreview" }, "Hear Added Notes"), 
+                    option({ value: "showLetters" }, "Show Piano Keys"),
+                    option({ value: "showFifth" }, 'Highlight "Fifth" Note'), 
+                    option({ value: "showThird" }, 'Highlight "Third" Note'),
+                    option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"), 
+                    option({ value: "showChannels" }, "Show All Channels"), 
+                    option({ value: "showScrollBar" }, "Show Octave Scroll Bar"), 
+                    option({ value: "alwaysFineNoteVol" }, "Always Fine Note Volume"), 
+                    option({ value: "enableChannelMuting" }, "Enable Channel Muting"), 
+                    option({ value: "displayBrowserUrl" }, "Show Song Data in URL"), 
+                    option({ value: "displayVolumeBar" }, "Show Playback Volume"), 
+                    option({ value: "layout" }, "Set Layout..."), 
+                    option({ value: "colorTheme" }, "Set Theme..."), 
+                    option({ value: "recordingSetup" }, "Note Recording..."),
+                ):
+                select({ style: "width: 100%;" }, 
+                    option({ selected: true, disabled: true, hidden: false }, "Preferences"), 
+                    option({ value: "autoPlay" }, "Auto Play on Load"), 
+                    option({ value: "autoFollow" }, "Auto Follow Playhead"), 
+                    option({ value: "enableNotePreview" }, "Hear Added Notes"), 
+                    option({ value: "showLetters" }, "Show Piano Keys"),
+                    option({ value: "showFifth" }, 'Highlight "Fifth" Note'), 
+                    option({ value: "showThird" }, 'Highlight "Third" Note'),
+                    option({ value: "showJustThird"}, ' • Highlight "Just" Third Note'),
+                    option({ value: "notesOutsideScale" }, "Place Notes Out of Scale"), 
+                    option({ value: "showChannels" }, "Show All Channels"), 
+                    option({ value: "showScrollBar" }, "Show Octave Scroll Bar"), 
+                    option({ value: "alwaysFineNoteVol" }, "Always Fine Note Volume"), 
+                    option({ value: "enableChannelMuting" }, "Enable Channel Muting"), 
+                    option({ value: "displayBrowserUrl" }, "Show Song Data in URL"), 
+                    option({ value: "displayVolumeBar" }, "Show Playback Volume"), 
+                    option({ value: "layout" }, "Set Layout..."), 
+                    option({ value: "colorTheme" }, "Set Theme..."), 
+                    option({ value: "recordingSetup" }, "Note Recording..."),
+                )
+            );
             this._scaleSelect = buildScaleOptions(select(), createScales(this._doc.song.edo).map(scale => scale.name), createBreaks(this._doc.song.edo), createBreakNames(this._doc.song.edo));
             this._keySelect = buildOptions(select(), createKeys(this._doc.song.edo).map(key => key.name).reverse());
             this._tempoSlider = new Slider(input({ style: "margin: 0; vertical-align: middle;", type: "range", min: "30", max: "320", value: "160", step: "1" }), this._doc, (oldValue, newValue) => new ChangeTempo(this._doc, oldValue, newValue), false);
@@ -29118,10 +29658,11 @@ You should be redirected to the song at:<br /><br />
                     (prefs.showLetters ? "✓ " : "　") + "Show Piano Keys",
                     (prefs.showFifth ? "✓ " : "　") + 'Highlight "Fifth" Note',
                     (prefs.showThird ? "✓ " : "　") + 'Highlight "Third" Note',
+                    (prefs.showJustThird ? "✓ " : "　") + ' • Highlight "Just" Third Note',
                     (prefs.notesOutsideScale ? "✓ " : "　") + "Place Notes Out of Scale",
                     (prefs.showChannels ? "✓ " : "　") + "Show All Channels",
                     (prefs.showScrollBar ? "✓ " : "　") + "Show Octave Scroll Bar",
-                    (prefs.alwaysFineNoteVol ? "✓ " : "") + "Always Fine Note Volume",
+                    (prefs.alwaysFineNoteVol ? "✓ " : "　") + "Always Fine Note Volume",
                     (prefs.enableChannelMuting ? "✓ " : "　") + "Enable Channel Muting",
                     (prefs.displayBrowserUrl ? "✓ " : "　") + "Show Song Data in URL",
                     (prefs.displayVolumeBar ? "✓ " : "　") + "Show Playback Volume",
@@ -29129,6 +29670,9 @@ You should be redirected to the song at:<br /><br />
                     "　Set Theme...",
                     "　Note Recording...",
                 ];
+                if (Math.round(_doc.song.edo * Math.log2(5)) == 4 * Math.round(_doc.song.edo * Math.log2(3 / 2))) { //is 5-comma tempered out?
+                    optionCommands.splice(6, 1);
+                } // if 5-comma is tempered out, 'Highlight "Just" Third Note' option is removed
                 for (let i = 0; i < optionCommands.length; i++) {
                     const option = this._optionsMenu.children[i + 1];
                     if (option.textContent != optionCommands[i])
@@ -30350,6 +30894,7 @@ You should be redirected to the song at:<br /><br />
                             this._doc.prefs.enableNotePreview = true;
                             this._doc.prefs.showFifth = true;
                             this._doc.prefs.showThird = true;
+                            this._doc.prefs.showJustThird = false;
                             this._doc.prefs.notesOutsideScale = false;
                             this._doc.prefs.showLetters = true;
                             this._doc.prefs.showChannels = true;
@@ -31136,6 +31681,15 @@ You should be redirected to the song at:<br /><br />
                         break;
                     case "showThird":
                         this._doc.prefs.showThird = !this._doc.prefs.showThird;
+                        if (this._doc.prefs.showThird == false) {
+                            this._doc.prefs.showJustThird = false;
+                        }
+                        break;
+                    case "showJustThird":
+                        this._doc.prefs.showJustThird = !this._doc.prefs.showJustThird;
+                        if (this._doc.prefs.showJustThird == true) {
+                            this._doc.prefs.showThird = true;
+                        }
                         break;
                     case "notesOutsideScale":
                         this._doc.prefs.notesOutsideScale = !this._doc.prefs.notesOutsideScale;
@@ -33117,17 +33671,44 @@ You should be redirected to the song at:<br /><br />
     }
 
     class Preferences {
-        constructor() {
+        constructor(_doc) {
+            this._doc = _doc;
             this.volume = 75;
             this.visibleOctaves = Preferences.defaultVisibleOctaves;
             this.reload();
+            this.fixKeyboardLayout = function(_doc) { 
+                // In some EDOs, one keyboard layout can become invalid (i.e. a neutral scale in 12edo)
+                // This makes sure that you'll be moved into a valid one as soon as you change to a different EDO
+                let edo = _doc.song.edo;
+                let bestFifth = Math.round(edo * Math.log2(3/2));
+                let neu = Math.round(edo * Math.log2(12/11)); // neutral second
+                if ((2 * neu != 2 * edo - 3 * bestFifth) || (bestFifth / edo == 4/7) || (edo <= 9) || (edo == 11)) {
+                    if (this.keyboardLayout == "pianoInCNeu") {
+                        this.keyboardLayout = "pianoAtC"; 
+                    } else if (this.keyboardLayout == "pianoTransposingCNeu") {
+                        this.keyboardLayout = "pianoTransposingC";
+                    }
+                    if ((bestFifth / edo == 4/7) || (edo <= 9) || (edo == 11)) {
+                        if (this.keyboardLayout == "pianoTransposingA") this.keyboardLayout = "pianoTransposingC"; 
+                    }
+                }
+                if (edo == 10) {
+                    if ((this.keyboardLayout == "pianoAtC") || (this.keyboardLayout == "pianoAtA")) { 
+                        this.keyboardLayout = "pianoInCNeu"; 
+                    } else if ((this.keyboardLayout == "pianoTransposingC") || (this.keyboardLayout == "pianoTransposingC")) {
+                        this.keyboardLayout = "pianoTransposingCNeu";
+                    }
+                }
+            };
         }
+
         reload() {
             this.autoPlay = window.localStorage.getItem("autoPlay") == "true";
             this.autoFollow = window.localStorage.getItem("autoFollow") != "false";
             this.enableNotePreview = window.localStorage.getItem("enableNotePreview") != "false";
             this.showFifth = window.localStorage.getItem("showFifth") == "true";
             this.showThird = window.localStorage.getItem("showThird") == "true";
+            this.showJustThird = window.localStorage.getItem("showJustThird") == "true";
             this.notesOutsideScale = window.localStorage.getItem("notesOutsideScale") == "true";
             this.showLetters = window.localStorage.getItem("showLetters") == "true";
             this.showChannels = window.localStorage.getItem("showChannels") == "true";
@@ -33158,13 +33739,18 @@ You should be redirected to the song at:<br /><br />
                     this.layout = "long";
                 window.localStorage.removeItem("fullScreen");
             }
+            if (Math.log2(5) == 4 * Math.log2(3 / 2)) {
+                this.showJustThird = "false";
+            }
         }
+
         save() {
             window.localStorage.setItem("autoPlay", this.autoPlay ? "true" : "false");
             window.localStorage.setItem("autoFollow", this.autoFollow ? "true" : "false");
             window.localStorage.setItem("enableNotePreview", this.enableNotePreview ? "true" : "false");
             window.localStorage.setItem("showFifth", this.showFifth ? "true" : "false");
             window.localStorage.setItem("showThird", this.showThird ? "true" : "false");
+            window.localStorage.setItem("showJustThird", this.showJustThird ? "true" : "false");
             window.localStorage.setItem("notesOutsideScale", this.notesOutsideScale ? "true" : "false");
             window.localStorage.setItem("showLetters", this.showLetters ? "true" : "false");
             window.localStorage.setItem("showChannels", this.showChannels ? "true" : "false");
@@ -33191,6 +33777,7 @@ You should be redirected to the song at:<br /><br />
         }
     }
     Preferences.defaultVisibleOctaves = 3;
+    
 
     class ChangeNotifier {
         constructor() {

@@ -4,20 +4,31 @@ import {Config} from "../synth/SynthConfig";
 import {createKeys, createScales} from "../synth/CreateScalesAndKeys";
 import {SongDocument} from "./SongDocument";
 
+let edo = doc.song.edo;
+let fifth = Math.round(edo * Math.log2(3/2)); //best fifth
+let whole = 2 * fifth - edo; // whole step
+let half = edo * 3 - fifth * 5; // diatonic half step (i.e. B-C, E-F)
+let neu = Math.round(edo * Math.log2(12/11)); //neutral 2nd
 export class KeyboardLayout {
 	private static _pianoAtC: ReadonlyArray<ReadonlyArray<number | null>> = [
-		[   0,   2,   4,   5,   7,   9,  11,  12,  14,  16,  17],
-		[null,   1,   3,null,   6,   8,  10,null,  13,  15,null,  18],
-		[  12,  14,  16,  17,  19,  21,  23,  24,  26,  28,  29,  31,  33],
-		[null,  13,  15,null,  18,  20,  22,null,  25,  27,null,  30,  32],
+		[0,    whole,     2*whole,         2*whole+half,     fifth,         fifth+whole,       fifth+2*whole,       edo,        edo+whole,        edo+2*whole,   edo+2*whole+half    ],
+		[null, half,      whole+half,      null,             edo-3*whole,   edo-2*whole,       edo-whole, null,     edo+half,   edo+whole+half,   null,          2*edo-3*whole       ],
+		[edo,  edo+whole, edo+2*whole,     edo+2*whole+half, edo+fifth,     edo+fifth+whole,   edo+fifth+2*whole,   2*edo,      2*edo+whole,      2*edo+2*whole, 2*edo+2*whole+half, 2*edo+fifth, 2*edo+fifth+whole],
+		[null, edo+half,  edo+whole+half,  null,             2*edo-3*whole, 2*edo-2*whole,     2*edo-whole, null,   2*edo+half, 2*edo+whole+half, null,          3*edo-3*whole,      3*edo-2*whole],
 	];
 	private static _pianoAtA: ReadonlyArray<ReadonlyArray<number | null>> = [
-		[   0,   2,   3,   5,   7,   8,  10,  12,  14,  15,  17],
-		[  -1,   1,null,   4,   6,null,   9,  11,  13,null,  16,  18],
-		[  12,  14,  15,  17,  19,  20,  22,  24,  26,  27,  29,  31,  32],
-		[  11,  13,null,  16,  18,null,  21,  23,  25,null,  28,  30,null],
+		[0,              whole,     whole+half,     2*whole+half,     fifth,         edo-2*whole,   edo-whole,          edo,              edo+whole,   edo+whole+half,   edo+2*whole+half    ],
+		[half-whole,     half,      null,           whole+2*half,     edo-3*whole,   null,          edo-2*whole+half,   edo-whole+half,   edo+half,    null,             edo+whole+2*half,   2*edo-3*whole  ],
+		[edo,            edo+whole, edo+whole+half, edo+2*whole+half, edo+fifth,     2*edo-2*whole, 2*edo-whole,        2*edo,            2*edo+whole, 2*edo+whole+half, 2*edo+2*whole+half, 2*edo+fifth,   3*edo-2*whole],
+		[edo-whole+half, edo+half,  null,           edo+whole+2*half, 2*edo-3*whole, null,          2*edo-2*whole+half, 2*edo-whole+half, 2*edo+half,  null,             2*edo+whole+2*half, 3*edo-3*whole, null         ],
 	];
-	
+	private static _pianoInCNeu: ReadonlyArray<ReadonlyArray<number | null>> = [
+		[0,             whole,     whole+neu,     whole+2*neu,     fifth,           fifth+neu,     edo-neu,     edo,             edo+whole,   edo+whole+neu,   edo+whole+2*neu],
+		[neu-whole,     neu,       2*neu,         null,            whole+3*neu,     null,          edo-whole,   edo+neu-whole,   edo+neu,     edo+2*neu,       null,              edo+whole+3*neu    ],
+		[edo,           edo+whole, edo+whole+neu, edo+whole+2*neu, edo+fifth,       edo+fifth+neu, 2*edo-neu,   2*edo,           2*edo+whole, 2*edo+whole+neu, 2*edo+whole+2*neu, 2*edo+fifth,       2*edo+fifth+neu],
+		[edo+neu-whole, edo+neu,   edo+2*neu,     null,            edo+whole+3*neu, null,          2*edo-whole, 2*edo+neu-whole, 2*edo+neu,   2*edo+2*neu,     null,              2*edo+whole+3*neu, null           ],
+	];
+
 	public static keyPosToPitch(doc: SongDocument, x: number, y: number, keyboardLayout: string): number | null {
 		let pitchOffset: number | null = null;
 		let forcedKey: number | null = null;
@@ -38,11 +49,22 @@ export class KeyboardLayout {
 				pitchOffset = KeyboardLayout._pianoAtA[y][x];
 				forcedKey = createKeys(doc.song.edo).dictionary["A"].basePitch;
 				break;
+			case "pianoInCNeu":
+				if (2 * neu == 2 * edo - 3 * fifth) {
+					pitchOffset = KeyboardLayout._pianoInCNeu[y][x];
+					forcedKey = createKeys(doc.song.edo).dictionary["C"].basePitch;
+				}
+				break;
 			case "pianoTransposingC":
 				pitchOffset = KeyboardLayout._pianoAtC[y][x];
 				break;
 			case "pianoTransposingA":
 				pitchOffset = KeyboardLayout._pianoAtA[y][x];
+				break;
+			case "pianoTransposingCNeu":
+				if (2 * neu == 2 * edo - 3 * fifth) {
+					pitchOffset = KeyboardLayout._pianoInCNeu [y][x];
+				}
 				break;
 		}
 		
@@ -53,7 +75,7 @@ export class KeyboardLayout {
 		
 		if (forcedKey != null) {
 			const keyBasePitch: number = createKeys(doc.song.edo)[doc.song.key].basePitch;
-			keyOffset = (forcedKey - keyBasePitch + 144) % doc.song.edo;
+			keyOffset = forcedKey - keyBasePitch;
 		}
 		
 		const pitch = octaveOffset + keyOffset + pitchOffset;
