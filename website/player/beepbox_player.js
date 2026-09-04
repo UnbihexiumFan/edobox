@@ -14950,8 +14950,8 @@ var beepbox = (function (exports) {
         let windowPitchCount;
         if (zoomEnabled) {
             timelineHeight = boundingRect.height;
-            windowOctaves = Math.max(1, Math.min(Config.pitchOctaves, Math.round(timelineHeight / (12 * 2))));
-            windowPitchCount = windowOctaves * 12 + 1;
+            windowOctaves = Math.max(1, Math.min(Config.pitchOctaves, Math.round(timelineHeight / (synth.song.edo * 2))));
+            windowPitchCount = windowOctaves * synth.song.edo + 1;
             const semitoneHeight = (timelineHeight - 1) / windowPitchCount;
             const targetBeatWidth = Math.max(8, semitoneHeight * 4);
             timelineWidth = Math.max(boundingRect.width, targetBeatWidth * synth.song.barCount * synth.song.beatsPerBar);
@@ -14959,9 +14959,9 @@ var beepbox = (function (exports) {
         else {
             timelineWidth = boundingRect.width;
             const targetSemitoneHeight = Math.max(1, timelineWidth / (synth.song.barCount * synth.song.beatsPerBar) / 6.0);
-            timelineHeight = Math.min(boundingRect.height, targetSemitoneHeight * (12 * Config.pitchOctaves + 1) + 1);
-            windowOctaves = Math.max(3, Math.min(Config.pitchOctaves, Math.round(timelineHeight / (12 * targetSemitoneHeight))));
-            windowPitchCount = windowOctaves * 12 + 1;
+            timelineHeight = Math.min(boundingRect.height, targetSemitoneHeight * (synth.song.edo * Config.pitchOctaves + 1) + 1);
+            windowOctaves = Math.max(3, Math.min(Config.pitchOctaves, Math.round(timelineHeight / (synth.song.edo * targetSemitoneHeight))));
+            windowPitchCount = windowOctaves * synth.song.edo + 1;
         }
         timelineContainer.style.width = timelineWidth + "px";
         timelineContainer.style.height = timelineHeight + "px";
@@ -14976,14 +14976,14 @@ var beepbox = (function (exports) {
             timeline.appendChild(rect({ x: bar * barWidth - 1, y: 0, width: 2, height: timelineHeight, fill: color }));
         }
         for (let octave = 0; octave <= windowOctaves; octave++) {
-            timeline.appendChild(rect({ x: 0, y: octave * 12 * wavePitchHeight, width: timelineWidth, height: wavePitchHeight + 1, fill: ColorConfig.tonic, opacity: 0.75 }));
+            timeline.appendChild(rect({ x: 0, y: octave * synth.song.edo * wavePitchHeight, width: timelineWidth, height: wavePitchHeight + 1, fill: ColorConfig.tonic, opacity: 0.75 }));
         }
         for (let channel = synth.song.channels.length - 1 - synth.song.modChannelCount; channel >= 0; channel--) {
             const isNoise = synth.song.getChannelIsNoise(channel);
             const pitchHeight = isNoise ? drumPitchHeight : wavePitchHeight;
             const configuredOctaveScroll = synth.song.channels[channel].octave;
             const newOctaveScroll = Math.max(0, Math.min(Config.pitchOctaves - windowOctaves, Math.ceil(configuredOctaveScroll - windowOctaves * 0.5)));
-            const offsetY = newOctaveScroll * pitchHeight * 12 + timelineHeight - pitchHeight * 0.5 - 0.5;
+            const offsetY = newOctaveScroll * pitchHeight * synth.song.edo + timelineHeight - pitchHeight * 0.5 - 0.5;
             for (let bar = 0; bar < synth.song.barCount; bar++) {
                 const pattern = synth.song.getPattern(channel, bar);
                 if (pattern == null)
